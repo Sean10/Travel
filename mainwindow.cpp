@@ -11,6 +11,7 @@ Widget::Widget(QStackedWidget *parent)
     CreateFifthPage();
     CreateSecond2Page();
     CreateThird2Page();
+    CreateFourth2Page();
     CreateSecond3Page();
     CreateThird3Page();
     CreateFourth3Page();

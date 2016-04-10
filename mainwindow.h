@@ -14,6 +14,9 @@
 #include <QRadioButton>
 #include <QDialog>
 #include <QMessageBox>
+#include <QApplication>
+#include <QLabel>
+#include <QThread>
 
 class Widget : public QStackedWidget
 {
