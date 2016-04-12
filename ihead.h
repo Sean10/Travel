@@ -5,7 +5,7 @@
 #include<cstdlib>
 #include<time.h>
 #include<malloc.h>
-#include<dos.h>
+//#include<dos.h>
 //#include<windows.h>
 //#include<winsock.h>
 //#include<winbase.h>

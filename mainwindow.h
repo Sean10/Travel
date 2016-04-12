@@ -79,6 +79,11 @@ private:
 
     QHBoxLayout *secondLayout1;
     QLabel *labelHint3;
+    QLabel *labelStopoverCity2_1;
+    QLineEdit *lineStopoverCity2_1;
+    QLabel *labelStopoverTime2_1;
+    QLineEdit *lineStopoverTime2_1;
+
     QLabel *labelStopoverCity;
     QLineEdit *lineStopoverCity;
 
@@ -128,6 +133,8 @@ private:
     QHBoxLayout *layoutButtonGoBack2_4;
     QVBoxLayout *layoutThird2;
     QWidget *third2Widget;
+
+    QLabel *labelLocation;
 
     QVBoxLayout *layoutFourth2;
     QWidget *fourth2Widget;

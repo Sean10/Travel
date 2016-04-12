@@ -23,6 +23,12 @@ City city[maxCity+2];
 
 int main(int argc, char *argv[])
 {
+
+    QApplication a(argc, argv);
+    Widget *win = new Widget;
+//    win->show();
+
+    //return a.exec();
     ReqNum = 0;
     minMoney = 0x3f3f3f3f;//初始化最小金额
     minTime = 0x3f3f3f3f;//初始化最少时间
@@ -49,13 +55,13 @@ int main(int argc, char *argv[])
         }
         //cout <<"aaa"<<endl;
         fscanf(sourceData, "%d", &routeNum);
-        int q = 0;
+        //int q = 0;
         while(routeNum--)
         {
             Route temp;
             int i1, j1;
-            char buff2[30], tstartin[30], tdestin[30], tid[30];
-            fscanf(sourceData, "%s%s%s%s%d%f%f%d", &buff2, &temp.id, &temp.startin, &temp.destin, &temp.price, &temp.timeSpan, &temp.firstExpressTime, &temp.interval);
+            char buff2[30];//, tstartin[30], tdestin[30], tid[30];
+            fscanf(sourceData, "%s%s%s%s%d%f%f%d", buff2, temp.id, temp.startin, temp.destin, &temp.price, &temp.timeSpan, &temp.firstExpressTime, &temp.interval);
 
             for(int i = 1; i <= cityNum; i++)
             {
@@ -86,7 +92,7 @@ int main(int argc, char *argv[])
     }
 
 /*
- * 这里的对线程ID赋值是干什么的？
+ *
     DWORD ThreadID1 = 1;
     HANDLE hRead1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)InputReq, NULL, 0, &ThreadID1);
     DWORD ThreadID2 = 2;
@@ -95,24 +101,22 @@ int main(int argc, char *argv[])
     HANDLE hRead3 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)OutMap, NULL, 0, &ThreadID3);
 */
 
-    QObject *InPutReq = new QObject;
+
+
+    QObject InPutReq;
     QThread *ThreadID1;
-    InPutReq->moveToThread(ThreadID1);
+    InPutReq.moveToThread(ThreadID1);
 
-    QObject *Running = new QObject;
+    QObject Running;// = new QObject;
     QThread *ThreadID2;
-    Running->moveToThread(ThreadID2);
+    Running.moveToThread(ThreadID2);
 
-    QStackedWidget *widget = new QStackedWidget;
+    //QStackedWidget widget;// = new QStackedWidget;
     QThread *ThreadID3;
-    widget->moveToThread(ThreadID3);
+    win->moveToThread(ThreadID3);
 
     while(1);
-    return 0;
 
-
-    QApplication a(argc, argv);
-    Widget *win = new Widget;
-    win->show();
     return a.exec();
+
 }

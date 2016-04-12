@@ -65,6 +65,7 @@ void Widget::CreateSecondPage()
     labelHint2 = new QLabel(tr("Please input your travel plan:"));
     labelStarting = new QLabel(tr("Starting:"));
     lineStarting = new QLineEdit;
+
     labelStarting->setBuddy(lineStarting);
 
     labelDestination = new QLabel(tr("Destination:"));
@@ -78,9 +79,13 @@ void Widget::CreateSecondPage()
     secondLayout1->addWidget(lineDestination);
 
     labelHint3 = new QLabel(tr("Please input the stopover cities:"));
-    labelStopoverCity = new QLabel(tr("Stopover City:"));
-    lineStopoverCity = new QLineEdit;
-    labelStopoverCity->setBuddy(lineStopoverCity);
+    labelStopoverCity2_1 = new QLabel(tr("Stopover City:"));
+    lineStopoverCity2_1 = new QLineEdit;
+    labelStopoverCity2_1->setBuddy(lineStopoverCity);
+    labelStopoverTime2_1 = new QLabel(tr("Stopover Time:"));
+    lineStopoverTime2_1 = new QLineEdit;
+    labelStopoverTime2_1->setBuddy(lineStopoverTime);
+
 
     go3 = new QPushButton(tr("&Go"));
     connect(go3,SIGNAL(clicked()),this,SLOT(trans3()));
@@ -95,8 +100,11 @@ void Widget::CreateSecondPage()
     layoutButtonGoBack2->addWidget(back1);
 
     secondLayout2 = new QHBoxLayout;
-    secondLayout2->addWidget(labelStopoverCity);
-    secondLayout2->addWidget(lineStopoverCity);
+    secondLayout2->addWidget(labelStopoverCity2_1);
+    secondLayout2->addWidget(lineStopoverCity2_1);
+    secondLayout2->addWidget(labelStopoverTime2_1);
+    secondLayout2->addWidget(lineStopoverTime2_1);
+
 
     secondLayout = new QVBoxLayout;
     secondLayout->addWidget(label);
@@ -210,6 +218,9 @@ void Widget::CreateSecond2Page()
     go2_3 = new QPushButton(tr("&Go"));
     connect(go2_3,SIGNAL(clicked(bool)), this,SLOT(trans2_3()));
 
+   // back1->set(tr("&Back"));
+   // connect(back1,SIGNAL(clicked(bool)),this,SLOT(trans1()));//here may risk of repeating
+
     layoutButtonGoBack2_3 = new QHBoxLayout;
     layoutButtonGoBack2_3->addStretch();
     layoutButtonGoBack2_3->addWidget(go2_3);
@@ -260,8 +271,17 @@ void Widget::CreateFourth2Page()
     layoutFourth2->addStretch();
     layoutFourth2->addWidget(back1);
 
+    //labelLocation = new QLabel;
+    //painterLocation(":/location.png");
+    //labelLocation->;
+
     fourth2Widget = new QWidget;
+    fourth2Widget->setObjectName("Map");
+    //QPixmap map(":/map.jpg");
+    fourth2Widget->setFixedSize(702,505);
+    fourth2Widget->setStyleSheet("#Map{border-image:url(:/map.jpg);}");
     fourth2Widget->setLayout(layoutFourth2);
+    //fourth2Widget->
     this->addWidget(fourth2Widget);
 
 }

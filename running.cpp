@@ -1,4 +1,5 @@
 #include "ihead.h"
+#include "running.h"
 using namespace std;
 
 extern int ReqNum;//旅客的数量
@@ -19,7 +20,7 @@ extern float minTime;
 extern clock_t zeroTime;//系统零点定时
 extern clock_t currentTime;//系统临时计时变量
 
-void Running()//假设10s为一小时，不间断地刷新乘客的信息
+Running::Running()//假设10s为一小时，不间断地刷新乘客的信息
 {
     while(1)
     {
@@ -92,4 +93,8 @@ void Running()//假设10s为一小时，不间断地刷新乘客的信息
             p = p->nextTour;
         }
     }
+}
+
+Running::~Running()
+{
 }

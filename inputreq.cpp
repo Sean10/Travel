@@ -484,3 +484,8 @@ InputReq::InputReq()
     goto loop2;
     return ;
 }
+
+
+InputReq::~InputReq()
+{;
+}
