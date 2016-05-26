@@ -1,3 +1,4 @@
+/*
 #ifndef INPUTREQ
 #define INPUTREQ
 
@@ -13,4 +14,5 @@ public:
 };
 
 #endif // INPUTREQ
+*/
 

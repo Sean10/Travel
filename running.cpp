@@ -1,4 +1,6 @@
+//#ifndef ihead
 #include "ihead.h"
+//#endif
 #include "running.h"
 using namespace std;
 

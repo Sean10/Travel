@@ -5,25 +5,30 @@
 #include<cstdlib>
 #include<time.h>
 #include<malloc.h>
-//#include<dos.h>
-//#include<windows.h>
-//#include<winsock.h>
-//#include<winbase.h>
 #include<algorithm>
+#include <QString>
+#include <iomanip>
+using namespace std;
 
 const int maxCity = 10;//城市最大数目
 const int maxTour = 150;//旅客最大数目
 const int maxRoute = 200;//各种航班数目最大值
 
+
+
 void ReadData(void);
 //void InputReq(void);
 void Running(void);
 void OutMap(void);
+void init(void);
 
 typedef struct Route{
     int Transport;//这条路线的交通工具 1为汽车 2为火车 3为飞机
     char id[20];//这个航班的编号,如3376(汽车)、Z66(火车)、CA1076(飞机)
+    //QString id;
     char startin[30];//出发地城市
+    //QString startin;
+    //QString destin;
     char destin[30];//目的地城市
     int startID, destID;//出发城市和目的城市的编号
     int price;//这条路线的价格
@@ -39,7 +44,8 @@ typedef struct Block{
 }Block;//邻接矩阵格子
 
 typedef struct City{
-    char cityName[30];//城市名称
+    //char cityName[30];//城市名称
+    QString cityName;
     float x, y;//城市的地理坐标
 }City;
 
@@ -51,7 +57,8 @@ typedef struct State{
 }State;   //状态结构体
 
 typedef struct PassingCity{
-    char cityName[30];//城市名称
+    //char cityName[30];//城市名称
+    QString cityName;
     int cityNo;//城市的编号
     int duration;//在某个城市停留的时间，整数, 以小时计
 }PassingCity;//途经城市结构体
@@ -60,9 +67,12 @@ typedef struct Tour{
     int service;//服务策略 1-最小金额 2-最短时间 3-限时最短时间策略
     float startTime;//该名旅客开始旅行的时间
     float nowTime;//该名旅客已经出发的时间
-    char TourName[30];//旅客姓名
-    char startin[30];//旅客出发地
-    char destin[30];//旅客目的地
+    //char TourName[30];//旅客姓名
+    QString TourName;
+    QString startin;
+    QString destin;
+    //char startin[30];//旅客出发地
+    //char destin[30];//旅客目的地
     int PassingNum;//旅客停留的城市数目
     PassingCity passingCity[12];//停留城市计划
     int RoutesNum;//存储路线计划数目

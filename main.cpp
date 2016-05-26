@@ -1,6 +1,5 @@
 #include "ihead.h"
 #include "mainwindow.h"
-using namespace std;
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 int tMoney;
@@ -21,14 +20,9 @@ Route buff[200];//存储路径缓冲区
 Block mat[maxCity+2][maxCity+2];
 City city[maxCity+2];
 
-int main(int argc, char *argv[])
-{
+int req, response;
 
-    QApplication a(argc, argv);
-    Widget *win = new Widget;
-//    win->show();
-
-    //return a.exec();
+void init(){
     ReqNum = 0;
     minMoney = 0x3f3f3f3f;//初始化最小金额
     minTime = 0x3f3f3f3f;//初始化最少时间
@@ -39,58 +33,79 @@ int main(int argc, char *argv[])
     curTour = NULL;
     memset(mat, 0, sizeof(mat));
 
-    printf("---------------------Tourist Information Inquiry System-------------------------\n");
-    printf("\n\n-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|Welcome!-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-\n\n");
+    //printf("---------------------Tourist Information Inquiry System-------------------------\n");
+    //printf("\n\n-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|Welcome!-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-\n\n");
 
-    loop1:printf("请输入要导入的地图文件：\n");
-    char getMap[30];
-    scanf("%s", getMap);
-    FILE *sourceData = fopen(getMap, "r");
-    if(sourceData != NULL)
+    //printf("请输入要导入的地图文件：\n");
+    //char getMap[30];
+    //scanf("%s", getMap);
+    //FILE *sourceData = fopen(":/transportData.txt", "r");//改成固定地图文件
+    QFile sourceData(":/transportData.txt");
+    if(!sourceData.open(QIODevice::ReadOnly))
     {
-        fscanf(sourceData, "%d", &cityNum);
+        qDebug() << "Could not open the file by reading";
+        return;
+    }
+
+    //if(sourceData == NULL)
+    //{
+      //  printf("The map file doesn't exist！\n");//change
+        //return;
+    //}
+    QTextStream in(&sourceData);
+
+    //fscanf(sourceData, "%d", &cityNum);
+    in >> cityNum >> endl;
+    qDebug() << cityNum;
+    for(int i = 1; i <= cityNum; i++)
+    {
+        //fscanf(sourceData, "%s%f%f", city[i].cityN    ame, &city[i].x, &city[i].y);
+        in >> city[i].cityName >> city[i].x >> city[i].y >> endl;
+        qDebug() << city[i].cityName << city[i].x << city[i].y;
+    }
+    //cout <<"aaa"<<endl;
+    //fscanf(sourceData, "%d", &routeNum);
+    in >> routeNum >> endl;
+    //int q = 0;
+    while(routeNum--)
+    {
+        Route temp;
+        int i1, j1;
+        //char buff2[30];
+        QString buff2;//, tstartin[30], tdestin[30], tid[30];
+        //fscanf(sourceData, "%s%s%s%s%d%f%f%d", buff2, temp.id, temp.startin, temp.destin, &temp.price, &temp.timeSpan, &temp.firstExpressTime, &temp.interval);
+        in >> buff2 >> temp.id >> temp.startin >> temp.destin >> temp.price >> temp.timeSpan >> temp.firstExpressTime >> temp.interval >> endl;
+
         for(int i = 1; i <= cityNum; i++)
         {
-            fscanf(sourceData, "%s%f%f", city[i].cityName, &city[i].x, &city[i].y);
+            if(!QString::compare(temp.startin, city[i].cityName))
+               i1 = i;
+            if(!QString::compare(temp.destin, city[i].cityName))
+               j1 = i;
         }
-        //cout <<"aaa"<<endl;
-        fscanf(sourceData, "%d", &routeNum);
-        //int q = 0;
-        while(routeNum--)
-        {
-            Route temp;
-            int i1, j1;
-            char buff2[30];//, tstartin[30], tdestin[30], tid[30];
-            fscanf(sourceData, "%s%s%s%s%d%f%f%d", buff2, temp.id, temp.startin, temp.destin, &temp.price, &temp.timeSpan, &temp.firstExpressTime, &temp.interval);
+        mat[i1][j1].routesNum++;
+        if(!QString::compare(buff2, "car"))
+           temp.Transport = 1;
+        else if(!QString::compare(buff2, "train"))//修改成else if
+           temp.Transport = 2;
+        else if(!QString::compare(buff2, "flight"))
+           temp.Transport = 3;
 
-            for(int i = 1; i <= cityNum; i++)
-            {
-                if(!strcmp(temp.startin, city[i].cityName))
-                   i1 = i;
-                if(!strcmp(temp.destin, city[i].cityName))
-                   j1 = i;
-            }
-            mat[i1][j1].routesNum++;
-            if(!strcmp(buff2, "car"))
-               temp.Transport = 1;
-            else if(!strcmp(buff2, "train"))//修改成else if
-               temp.Transport = 2;
-            else if(!strcmp(buff2, "flight"))
-               temp.Transport = 3;
-
-            mat[i1][j1].rt[mat[i1][j1].routesNum].startID = i1;
-            mat[i1][j1].rt[mat[i1][j1].routesNum].destID = j1;
-            mat[i1][j1].rt[mat[i1][j1].routesNum] = temp;
-        }
-        fclose(sourceData);
-        sourceData = NULL;
+        mat[i1][j1].rt[mat[i1][j1].routesNum].startID = i1;
+        mat[i1][j1].rt[mat[i1][j1].routesNum].destID = j1;
+        mat[i1][j1].rt[mat[i1][j1].routesNum] = temp;
     }
-    else
-    {
-        printf("您输入的文件不存在，请重新输入！\n");
-        goto loop1;
-    }
+    //fclose(sourceData);
+    //sourceData = NULL;
+}
 
+int main(int argc, char *argv[])
+{
+
+    QApplication a(argc, argv);
+    init();
+
+    Widget *win = new Widget;
 /*
  *
     DWORD ThreadID1 = 1;
@@ -100,9 +115,7 @@ int main(int argc, char *argv[])
     DWORD ThreadID3 = 3;
     HANDLE hRead3 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)OutMap, NULL, 0, &ThreadID3);
 */
-
-
-
+/*
     QObject InPutReq;
     QThread *ThreadID1;
     InPutReq.moveToThread(ThreadID1);
@@ -114,9 +127,12 @@ int main(int argc, char *argv[])
     //QStackedWidget widget;// = new QStackedWidget;
     QThread *ThreadID3;
     win->moveToThread(ThreadID3);
+*/
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+    QTextCodec::setCodecForLocale(codec);
 
-    while(1);
-
+    win->show();
+    qDebug() << "win have been shown;";
     return a.exec();
 
 }

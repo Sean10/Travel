@@ -1,4 +1,7 @@
-#include "ihead.h"
+/*
+#ifndef ihead
+    #include "ihead.h"
+#endif
 #include "inputreq.h"
 using namespace std;
 
@@ -19,6 +22,7 @@ extern int pathlen;//路径长度
 extern float minTime;
 extern clock_t zeroTime;//系统零点定时
 extern clock_t currentTime;//系统临时计时变量
+extern int req;
 
 float tTime;
 float tminTime = (float)0x3f3f3f3f;
@@ -226,13 +230,13 @@ void Dijkstra3(int i, int j, Tour *tTour)//限时最小金额策略算法，类�
 InputReq::InputReq()
 {
     zeroTime = clock();//系统零点时刻定时
-    loop2:int req, response;
+    loop2:
     memset(buff, 0, sizeof(buff));
     printf("请选择以下服务:\n");
     printf("1-查询旅游路线\n");
     printf("2-查询旅客状态\n");
     printf("3-变更旅游计划\n");
-    scanf("%d", &req);
+    //scanf("%d", &req);
     if(req == 1)
     {
         int fro, to;//起始城市的标号
@@ -240,7 +244,7 @@ InputReq::InputReq()
         int passNum;
         Tour* tTour = (Tour*)malloc(sizeof(Tour));
         printf("请输入您的姓名：\n");
-        scanf("%s", tTour->TourName);
+        //scanf("%s", tTour->TourName);
         printf("请输入起始城市和目的城市：\n");
         scanf("%s%s", tTour->startin, tTour->destin);
         for(int i = 1; i <= cityNum; i++)
@@ -489,3 +493,4 @@ InputReq::InputReq()
 InputReq::~InputReq()
 {;
 }
+*/
