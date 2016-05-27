@@ -17,13 +17,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     inputreq.cpp \
-    outmap.cpp \
-    running.cpp
+    running.cpp \
+    mapwidget.cpp
 
 HEADERS  += mainwindow.h \
     ihead.h \
     inputreq.h \
-    running.h
+    running.h \
+    mapwidget.h
 
 FORMS    += mainwindow.ui
 

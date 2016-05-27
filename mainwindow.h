@@ -23,6 +23,9 @@
 #include <QCheckBox>
 #include <QDebug>
 #include <QTextEdit>
+#include <QIcon>
+#include <QMutex>
+
 
 //typedef struct Tour Tour;
 
@@ -55,6 +58,7 @@ public:
     int inq;//选择服务策略
     QString tName;//查询名字
 
+
     int ask;
 
 public slots:
@@ -70,7 +74,7 @@ public slots:
     void trans3_2();
     void trans3_3();
     void trans3_4();
-    void ConfirmOrder();
+    //void ConfirmOrder();
 
     //void AddPassenger(QString);
     //void SettingStarting(int);

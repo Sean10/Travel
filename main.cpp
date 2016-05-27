@@ -106,28 +106,19 @@ int main(int argc, char *argv[])
     init();
 
     Widget *win = new Widget;
-/*
- *
-    DWORD ThreadID1 = 1;
-    HANDLE hRead1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)InputReq, NULL, 0, &ThreadID1);
-    DWORD ThreadID2 = 2;
-    HANDLE hRead2 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Running, NULL, 0, &ThreadID2);//处于不断刷新旅客的状态中
-    DWORD ThreadID3 = 3;
-    HANDLE hRead3 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)OutMap, NULL, 0, &ThreadID3);
-*/
-/*
-    QObject InPutReq;
-    QThread *ThreadID1;
-    InPutReq.moveToThread(ThreadID1);
 
-    QObject Running;// = new QObject;
+
+
+    QObject *Running;// = new QObject;
+    Running = new QObject;
     QThread *ThreadID2;
-    Running.moveToThread(ThreadID2);
+    ThreadID2 = new QThread;
+    Running->moveToThread(ThreadID2);
 
     //QStackedWidget widget;// = new QStackedWidget;
-    QThread *ThreadID3;
-    win->moveToThread(ThreadID3);
-*/
+    //QThread *ThreadID3;
+    //win->moveToThread(ThreadID3);
+
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(codec);
 

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 //#ifndef ihead
 #include "ihead.h"
+#include "mapwidget.h"
 //#endif
 
 int Dijkstra1(int i, int j);
@@ -40,17 +41,28 @@ Route buff2[200];//临时路径缓冲区
 int tcurMon;//临时金额计数变量
 int passSeq[12];//中间经过城市的标号
 float restrainTime;//限时最小金额的时间限制条件
-
-
+//QWidget *mapRearl;
+mapWidget *mapReal;
 //Tour* tTour = (Tour*)malloc(sizeof(Tour));
+QMutex Mutex;
 
 
 Widget::Widget(QStackedWidget *parent)
     : QStackedWidget(parent)
 {
 
-    setWindowTitle("Travel Query Search System V1.0");
+    setWindowTitle("Travel Query Search System V1.1");
     qDebug() << "Init Widget succeed";
+    QIcon exeIcon(":/icon.ico");
+    this->setWindowIcon(exeIcon);
+
+    //QThread *ThreadID1;
+    //ThreadID1 = new QThread;
+    //QObject execute;
+    //ThreadID1->start();
+    //execute.moveToThread(ThreadID1);
+    //connect(ThreadID1,SIGNAL(started()),this,SLOT(execute()));
+
     //setFixedSize(720, 540);
     CreateFirstPage();
     CreateSecondPage();
@@ -73,19 +85,20 @@ Widget::~Widget()
 void Widget::CreateFirstPage()
 {
 
-    label = new QLabel("Welcome to the Travel Query Search System V1.0!\n\n");
-    labelHint = new QLabel("Please choose the following function:");
+    label = new QLabel(tr("欢迎使用旅行模拟系统V1.1"));
+    labelHint = new QLabel(tr("请在以下功能中选择使用"));
 
     layoutLeft = new QHBoxLayout;
     layoutLeft->addWidget(labelHint);
 
-    buttonRoute = new QPushButton("Search travel route");
-    buttonState = new QPushButton("Search tourist state");
-    buttonPlanChange = new QPushButton("Change tourist's plan");
+    buttonRoute = new QPushButton(tr("查询并制定旅行路线"));
+    buttonState = new QPushButton(tr("查询用户状态"));
+    buttonPlanChange = new QPushButton(tr("改变用户计划"));
 
     connect(buttonRoute,SIGNAL(clicked()),this,SLOT(trans2()));
     connect(buttonState,SIGNAL(clicked(bool)),this,SLOT(trans2_2()));
-    connect(buttonPlanChange,SIGNAL(clicked(bool)),this,SLOT(trans3_2()));
+    connect(buttonPlanChange,SIGNAL(clicked(bool)),this,SLOT(trans2()));
+    /* 改变计划策略直接采用制定界面 */
 
     firstLayout = new QVBoxLayout;
     firstLayout->addWidget(label);
@@ -168,19 +181,19 @@ void Widget::CreateSecondPage()
     secondLayout1->addWidget(lineDestination);
 
     QPushButton *addStopoverCity;
-    addStopoverCity = new QPushButton(tr("&Add stopover city"));
+    addStopoverCity = new QPushButton(tr("添加停留城市"));
     passNum = 0;
 
     connect(addStopoverCity, SIGNAL(clicked(bool)),this,SLOT(AddStopoverCityAndTime()));
 
     //labelHint3 = new QLabel(tr("Please input the stopover cities:"));
-    labelStopoverCity2_1 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_1 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_1 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_1->addItem(NumToCity(i));
     labelStopoverCity2_1->setBuddy(lineStopoverCity2_1);
 
-    labelStopoverTime2_1 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_1 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_1 = new QSpinBox();
     lineStopoverTime2_1->setRange(0,24);
     lineStopoverTime2_1->setValue(0);
@@ -190,13 +203,13 @@ void Widget::CreateSecondPage()
     lineStopoverTime2_1->setEnabled(false);
 
     //第二个途经城市
-    labelStopoverCity2_2 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_2 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_2 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_2->addItem(NumToCity(i));
     labelStopoverCity2_2->setBuddy(lineStopoverCity2_2);
 
-    labelStopoverTime2_2 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_2 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_2 = new QSpinBox();
     lineStopoverTime2_2->setRange(0,24);
     lineStopoverTime2_2->setValue(0);
@@ -205,13 +218,13 @@ void Widget::CreateSecondPage()
     lineStopoverCity2_2->setEnabled(false);
     lineStopoverTime2_2->setEnabled(false);
 
-    labelStopoverCity2_3 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_3 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_3 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_3->addItem(NumToCity(i));
     labelStopoverCity2_3->setBuddy(lineStopoverCity2_3);
 
-    labelStopoverTime2_3 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_3 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_3 = new QSpinBox();
     lineStopoverTime2_3->setRange(0,24);
     lineStopoverTime2_3->setValue(0);
@@ -221,13 +234,13 @@ void Widget::CreateSecondPage()
     lineStopoverTime2_3->setEnabled(false);
 
 
-    labelStopoverCity2_4 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_4 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_4 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_4->addItem(NumToCity(i));
     labelStopoverCity2_4->setBuddy(lineStopoverCity2_4);
 
-    labelStopoverTime2_4 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_4 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_4 = new QSpinBox();
     lineStopoverTime2_4->setRange(0,24);
     lineStopoverTime2_4->setValue(0);
@@ -237,13 +250,13 @@ void Widget::CreateSecondPage()
     lineStopoverTime2_4->setEnabled(false);
 
 
-    labelStopoverCity2_5 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_5 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_5 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_5->addItem(NumToCity(i));
     labelStopoverCity2_5->setBuddy(lineStopoverCity2_5);
 
-    labelStopoverTime2_5 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_5 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_5 = new QSpinBox();
     lineStopoverTime2_5->setRange(0,24);
     lineStopoverTime2_5->setValue(0);
@@ -253,13 +266,13 @@ void Widget::CreateSecondPage()
     lineStopoverTime2_5->setEnabled(false);
 
 
-    labelStopoverCity2_6 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_6 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_6 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_6->addItem(NumToCity(i));
     labelStopoverCity2_6->setBuddy(lineStopoverCity2_6);
 
-    labelStopoverTime2_6 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_6 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_6 = new QSpinBox();
     lineStopoverTime2_6->setRange(0,24);
     lineStopoverTime2_6->setValue(0);
@@ -269,13 +282,13 @@ void Widget::CreateSecondPage()
     lineStopoverTime2_6->setEnabled(false);
 
 
-    labelStopoverCity2_7 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_7 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_7 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_7->addItem(NumToCity(i));
     labelStopoverCity2_7->setBuddy(lineStopoverCity2_7);
 
-    labelStopoverTime2_7 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_7 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_7 = new QSpinBox();
     lineStopoverTime2_7->setRange(0,24);
     lineStopoverTime2_7->setValue(0);
@@ -285,13 +298,13 @@ void Widget::CreateSecondPage()
     lineStopoverTime2_7->setEnabled(false);
 
 
-    labelStopoverCity2_8 = new QLabel(tr("Stopover City:"));
+    labelStopoverCity2_8 = new QLabel(tr("停留城市:"));
     lineStopoverCity2_8 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_8->addItem(NumToCity(i));
     labelStopoverCity2_8->setBuddy(lineStopoverCity2_8);
 
-    labelStopoverTime2_8 = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime2_8 = new QLabel(tr("停留时长:"));
     lineStopoverTime2_8 = new QSpinBox();
     lineStopoverTime2_8->setRange(0,24);
     lineStopoverTime2_8->setValue(0);
@@ -300,10 +313,10 @@ void Widget::CreateSecondPage()
     lineStopoverCity2_8->setEnabled(false);
     lineStopoverTime2_8->setEnabled(false);
 
-    go3 = new QPushButton(tr("&Go"));
+    go3 = new QPushButton(tr("下一步"));
     connect(go3,SIGNAL(clicked()),this,SLOT(trans3()));
 
-    back1 = new QPushButton(tr("&Back"));
+    back1 = new QPushButton(tr("返回"));
     connect(back1,SIGNAL(clicked()),this,SLOT(trans1()));
 
     layoutButtonGoBack2 = new QHBoxLayout;
@@ -385,24 +398,24 @@ void Widget::CreateSecondPage()
 
 void Widget::CreateThirdPage()
 {
-    labelChooseStrategy = new QLabel(tr("Please choose a following strategy:"));
-    strategyValue = new QRadioButton(tr("The minimum account strategy"));
+    labelChooseStrategy = new QLabel(tr("请选择旅行计划策略:"));
+    strategyValue = new QRadioButton(tr("最少消费策略"));
     strategyValue->setChecked(true);
     inq = 1;
-    strategyTime = new QRadioButton(tr("The shortest time strategy"));
-    strategyValueTime = new QRadioButton("The minimum account within the limit time strategy");
+    strategyTime = new QRadioButton(tr("最短时间策略"));
+    strategyValueTime = new QRadioButton("限时最少消费策略");
     lineStrategyValueTime = new QSpinBox;
-    lineStrategyValueTime->setRange(0,24);
+    lineStrategyValueTime->setRange(0,72);
     lineStrategyValueTime->setValue(0);
     //strategyValueTime->set();//wait for adding the lineEdit.
     connect(strategyValue,SIGNAL(toggled(bool)),this,SLOT(SettingStrategy1()));
     connect(strategyTime, SIGNAL(toggled(bool)),this,SLOT(SettingStrategy2()));
     connect(strategyValueTime,SIGNAL(toggled(bool)),this,SLOT(SettingStrategy3()));
 
-    go4 = new QPushButton(tr("&Go"));
+    go4 = new QPushButton(tr("下一步"));
     connect(go4,SIGNAL(clicked()),this,SLOT(trans4()));
 
-    back2 = new QPushButton(tr("&Back"));
+    back2 = new QPushButton(tr("返回"));
     connect(back2,SIGNAL(clicked(bool)),this,SLOT(trans2()));
 
     layoutButtonGoBack3 = new QHBoxLayout;
@@ -490,11 +503,11 @@ void Widget::CreateSecond2Page()
     lineSearchTourist1 = new QLineEdit;
     labelSearchTourist1->setBuddy(lineSearchTourist1);
 
-    go2_3 = new QPushButton(tr("&Go"));
+    go2_3 = new QPushButton(tr("下一步"));
     connect(go2_3,SIGNAL(clicked(bool)), this,SLOT(trans2_3()));
 
     back1_1 = new QPushButton;
-    back1_1->setText(tr("&Back"));
+    back1_1->setText(tr("返回"));
     connect(back1_1,SIGNAL(clicked(bool)),this,SLOT(trans1()));//here may risk of repeating
 
     layoutButtonGoBack2_3 = new QHBoxLayout;
@@ -527,7 +540,7 @@ void Widget::CreateThird2Page()
     go2_4 = new QPushButton(tr("&Enter Real-Time Maps"));
     connect(go2_4,SIGNAL(clicked(bool)), this,SLOT(trans2_4()));
 
-    back2_2 = new QPushButton(tr("&Back"));
+    back2_2 = new QPushButton(tr("返回"));
     connect(back2_2,SIGNAL(clicked(bool)),this,SLOT(trans2_2()));
 
     layoutButtonGoBack2_4 = new QHBoxLayout;
@@ -549,8 +562,9 @@ void Widget::CreateThird2Page()
 void Widget::CreateFourth2Page()
 {
     back1_3 = new QPushButton;
-    back1_3->setText(tr("&Back"));
+    back1_3->setText(tr("返回"));
     connect(back1_3,SIGNAL(clicked(bool)),this,SLOT(trans1()));//here may risk of repeating
+
 
 
     layoutFourth2 = new QVBoxLayout;
@@ -561,15 +575,17 @@ void Widget::CreateFourth2Page()
     //painterLocation(":/location.png");
     //labelLocation->;
 
-    fourth2Widget = new QWidget;
-    fourth2Widget->setObjectName("Map");
+    mapReal = new mapWidget;
+    //fourth2Widget = new QWidget;
+    //mapWidget(fourth2Widget);
+    //fourth2Widget->setObjectName("Map");
     //QPixmap map(":/map.jpg");
-    fourth2Widget->setFixedSize(702,505);
-    fourth2Widget->setStyleSheet("#Map{border-image:url(:/map.jpg);}");
-    fourth2Widget->setLayout(layoutFourth2);
+    //fourth2Widget->setFixedSize(702,505);
+    //fourth2Widget->setStyleSheet("#Map{border-image:url(:/map.jpg);}");
+    //fourth2Widget->setLayout(layoutFourth2);
     //fourth2Widget->
-    this->addWidget(fourth2Widget);
-
+    mapReal->setLayout(layoutFourth2);
+    this->addWidget(mapReal);
 }
 
 void Widget::CreateSecond3Page()
@@ -581,11 +597,11 @@ void Widget::CreateSecond3Page()
     labelSearchTourist2->setBuddy(lineSearchTourist2);
 
 
-    go3_3 = new QPushButton(tr("&Go"));
+    go3_3 = new QPushButton(tr("下一步"));
     connect(go3_3,SIGNAL(clicked(bool)), this,SLOT(trans3_3()));
 
     back1_2 = new QPushButton;
-    back1_2->setText(tr("&Back"));
+    back1_2->setText(tr("返回"));
     connect(back1_2,SIGNAL(clicked(bool)),this,SLOT(trans1()));//here may risk of repeating
 
 
@@ -609,17 +625,17 @@ void Widget::CreateThird3Page()
 {
 
     labelHint3 = new QLabel(tr("Please input the stopover cities:"));
-    labelStopoverCity = new QLabel(tr("Stopover City:"));
+    labelStopoverCity = new QLabel(tr("停留城市:"));
     lineStopoverCity = new QLineEdit;
     labelStopoverCity->setBuddy(lineStopoverCity);
-    labelStopoverTime = new QLabel(tr("Stopover Time:"));
+    labelStopoverTime = new QLabel(tr("停留时长:"));
     lineStopoverTime = new QLineEdit;
     labelStopoverTime->setBuddy(lineStopoverTime);
 
-    go3_4 = new QPushButton(tr("&Go"));
+    go3_4 = new QPushButton(tr("下一步"));
     connect(go3_4,SIGNAL(clicked()),this,SLOT(trans3_4()));
 
-    back3_2 = new QPushButton(tr("&Back"));
+    back3_2 = new QPushButton(tr("返回"));
     connect(back3_2,SIGNAL(clicked(bool)),this,SLOT(trans3_2()));
 
     layoutButtonGoBack3_4 = new QHBoxLayout;
@@ -717,6 +733,7 @@ void Widget::Confirm()
             curTour->nextTour = tTour;
             curTour = tTour;
         }
+        //textOrderConfirmed->clear();
         qDebug() << tr("下单成功，欢迎使用更多功能!\n");
         trans5();
     }
@@ -737,11 +754,13 @@ void Widget::trans2_2()
 void Widget::trans2_3()
 {
     this->setCurrentWidget(third2Widget);
+    execute();
 }
 
 void Widget::trans2_4()
 {
-    this->setCurrentWidget(fourth2Widget);
+    //this->setCurrentWidget(fourth2Widget);
+    this->setCurrentWidget(mapReal);
 }
 
 void Widget::trans3_2()
@@ -890,8 +909,13 @@ void Dijkstra2(int i, int j, Tour *tTour)//最小时间算法，暴力递归回�
 void Dijkstra3(int i, int j, Tour *tTour)//限时最小金额策略算法，类似于上面的Dijkstra2函数，只不过加上了时间的限制，然后计算最小金额
 {
     //本算法是一个简单的回溯递归加剪枝算法
+    qDebug() << "tcurTime:" << tcurTime;
+    qDebug() << "restrainTime:" << restrainTime;
+    qDebug() << "tcurMon:" << tcurMon;
+    qDebug() << "minMoney:" << minMoney;
     if(tcurMon > minMoney || tcurTime > restrainTime)//剪枝
        return;
+
     flag[i] = 1;
     if(i == j)
     {
@@ -1010,6 +1034,7 @@ void Widget::SettingStopoverCity(int num, int cityNum)
 void Widget::execute()
 {
     loop2:
+    qDebug() << "Thread has survived";
     if(req == 1)
     {
         //passNum作为成员变量
@@ -1024,6 +1049,7 @@ void Widget::execute()
         //qDebug() << tTour->TourName;
         //printf("请输入起始城市和目的城市：\n");
         //scanf("%s%s", tTour->startin, tTour->destin);
+
         tTour->startin = NumToCityStr(lineStarting->currentIndex());
         tTour->destin = NumToCityStr(lineDestination->currentIndex());
 
@@ -1085,6 +1111,9 @@ void Widget::execute()
                 tMoney += Dijkstra1(passSeq[i], passSeq[i+1]);
             //printf("%d %d:%d\n", passSeq[i], passSeq[i+1], tMoney);
 
+            qDebug() << "tMoney:" << tMoney;
+            qDebug() << "1minMoney:" << minMoney;
+
             if(tMoney < minMoney)
             {
                 minMoney = tMoney;
@@ -1094,6 +1123,8 @@ void Widget::execute()
                     tTour->line[i] = buff[i];
                 tTour->RoutesNum = tRoutesNum;
             }
+            qDebug() << "minMoney:" << minMoney;
+
             while(next_permutation(passSeq+1, passSeq+passNum+1))
             {
                 int not_cheapest = 0;
@@ -1122,18 +1153,21 @@ void Widget::execute()
 
                     tTour->RoutesNum = tRoutesNum;
                 }
+                qDebug() << "3minMoney:" << minMoney;
             }
+            qDebug() << "minMoney:" << minMoney;
+
             tTour->startTime = tTour->line[1].firstExpressTime;//最少金额策略将旅客出发时间设置为第一条路线的首发时间
             textContent->setPlainText(tr("系统计算的最少金额路线为：\n"));
             for(int i = 1; i <= tTour->RoutesNum; i++)
-               textContent->append(tr("编号 ")+tTour->line[i].id+tTour->line[i].startin+"->"+tTour->line[i].destin+"\n");
-            textContent->append(tr("金额为")+minMoney+ tr("元，是否确认订单？"));
+               textContent->append(tr("编号 ")+tTour->line[i].id + " " + tTour->line[i].startin+"->"+tTour->line[i].destin+"\n");
+            textContent->append(tr("金额为")+QString::number(minMoney)+ tr("元，是否确认订单？"));
 
             textOrderConfirmed->setPlainText(tr("亲爱的")+lineTourName->text()+tr("顾客, 您的订单已确认。\n "));
             textOrderConfirmed->append(tr("系统计算的最少金额路线为：\n"));
             for(int i = 1; i <= tTour->RoutesNum; i++)
                 textOrderConfirmed->append(tr("编号 ")+tTour->line[i].id+tTour->line[i].startin+"->"+tTour->line[i].destin+"\n");
-            textOrderConfirmed->append(tr("金额为")+minMoney+ tr("元，是否确认订单？\n"));
+            textOrderConfirmed->append(tr("金额为")+ QString::number(minMoney) + tr("元，是否确认订单？\n"));
             textOrderConfirmed->append(tr("您可以继续查看您的状态和日志.\n感谢您的使用!"));
         }
         else if(inq == 2)//最短时间策略
@@ -1164,14 +1198,14 @@ void Widget::execute()
 
             textContent->setPlainText(tr("系统计算的最少时间路线为：\n"));
             for(int i = 1; i <= tTour->RoutesNum; i++)
-               textContent->append(tr("编号 ") +tTour->line[i].id + tTour->line[i].startin + "->" + tTour->line[i].destin);
-            textContent->append(tr("时间一共为") + minTime + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
+               textContent->append(tr("编号 ") +tTour->line[i].id + " " + tTour->line[i].startin + "->" + tTour->line[i].destin);
+            textContent->append(tr("时间一共为") + QString::number(minTime) + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
 
             textOrderConfirmed->setPlainText(tr("亲爱的")+lineTourName->text()+tr("顾客, 您的订单已确认。\n "));
             textOrderConfirmed->append(tr("系统计算的最少时间路线为：\n"));
             for(int i = 1; i <= tTour->RoutesNum; i++)
-               textOrderConfirmed->append(tr("编号 ") +tTour->line[i].id + tTour->line[i].startin + "->" + tTour->line[i].destin);
-            textOrderConfirmed->append(tr("时间一共为") + minTime + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
+               textOrderConfirmed->append(tr("编号 ") +tTour->line[i].id+ " " + tTour->line[i].startin + "->" + tTour->line[i].destin);
+            textOrderConfirmed->append(tr("时间一共为") + QString::number(minTime) + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
             textOrderConfirmed->append(tr("您可以继续查看您的状态和日志.\n感谢您的使用!"));
         }
 
@@ -1188,6 +1222,7 @@ void Widget::execute()
 
             loop4://printf("请输入您的限制时间(以小时为单位)：\n");
             //cin >> restrainTime;
+            restrainTime = lineStrategyValueTime->value();
 
             tTime = 0;
             tcurMon = 0;
@@ -1207,31 +1242,33 @@ void Widget::execute()
 
             if(minMoney == 0x3f3f3f3f)
             {
-                //printf("没有找到限定时间内的路线！请重新输入：\n");
-                //goto loop4;
+                textContent->setPlainText(tr("没有找到限定时间内的路线！请重新输入：\n"));
+
+                goto loop4;
                 qDebug() << tr("this is a error4\n");
             }
             else
             {
                 textContent->setPlainText(tr("系统计算的限时最少金额路线为：\n"));
                 for(int i = 1; i <= tTour->RoutesNum; i++)
-                   textContent->append(tr("编号 ") +tTour->line[i].id + tTour->line[i].startin + "->" + tTour->line[i].destin);
-                textContent->append(tr("金额为")+minMoney+ tr("元，总时间（包括等车、中间城市停留时间）为")+tTime + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
+                   textContent->append(tr("编号 ") +tTour->line[i].id +" "+ tTour->line[i].startin + "->" + tTour->line[i].destin);
+                textContent->append(tr("金额为")+QString::number(minMoney)+ tr("元，总时间（包括等车、中间城市停留时间）为")+QString::number(tTime) + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
 
                 textOrderConfirmed->setPlainText(tr("亲爱的")+lineTourName->text()+tr("顾客, 您的订单已确认。\n "));
                 textOrderConfirmed->append(tr("系统计算的限时最少金额路线为：\n"));
                 for(int i = 1; i <= tTour->RoutesNum; i++)
-                   textOrderConfirmed->append(tr("编号 ") +tTour->line[i].id + tTour->line[i].startin + "->" + tTour->line[i].destin);
-                textOrderConfirmed->append(tr("金额为")+minMoney+ tr("元，总时间（包括等车、中间城市停留时间）为")+tTime + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
-                textOrderConfirmed->append(tr("您可以继续查看您的状态和日志.\n感谢您的使用!"));
+                   textOrderConfirmed->append(tr("编号 ") +tTour->line[i].id +" "+ tTour->line[i].startin + "->" + tTour->line[i].destin);
+                textOrderConfirmed->append(tr("金额为")+QString::number(minMoney)+ tr("元，总时间（包括等车、中间城市停留时间）为")+QString::number(tTime) + tr("小时（包括旅游停留时间和等待班车时间），是否确认订单？\n"));
+                textOrderConfirmed->append(tr("您可以继续查看您的状态和日志.\n\n感谢您的使用!"));
             }
         }
         else
         {
             //printf("输入有误，请重新输入！\n");
             qDebug() << "This is an error3\n";
-            //goto loop3;
+            goto loop3;
         }
+        req = 0;
 
         //cin >> ask;
 
@@ -1245,8 +1282,10 @@ void Widget::execute()
         //scanf("%s", tName);
         tName = lineSearchTourist1->text();
         Tour* Srch = hTour->nextTour;
+        qDebug() << "No Srch";
         while(Srch)
         {
+            qDebug() << "Here is Srch ";
             if(!QString::compare(tName, Srch->TourName, Qt::CaseSensitive))
             {
                flag2 = 1;
@@ -1391,9 +1430,9 @@ void Widget::SettingStrategy2()
 void Widget::SettingStrategy3()
 {
     inq = 3;
-    restrainTime = lineStrategyValueTime->value();
+    //restrainTime = lineStrategyValueTime->value();
 }
-
+/*
 void Widget::ConfirmOrder()
 {
     if(ask == 1)
@@ -1407,3 +1446,4 @@ void Widget::ConfirmOrder()
 
     }
 }
+*/
