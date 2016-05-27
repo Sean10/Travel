@@ -1,8 +1,10 @@
 #include "mainwindow.h"
-//#ifndef ihead
 #include "ihead.h"
 #include "mapwidget.h"
-//#endif
+//#ifndef running
+//#include "running.h"
+
+//class Running;
 
 int Dijkstra1(int i, int j);
 void Dijkstra2(int i, int j, Tour *tTour);
@@ -56,12 +58,21 @@ Widget::Widget(QStackedWidget *parent)
     QIcon exeIcon(":/icon.ico");
     this->setWindowIcon(exeIcon);
 
+
+    //connect(ThreadID2,SIGNAL(started()),this,SLOT(running));
+
+
     //QThread *ThreadID1;
     //ThreadID1 = new QThread;
     //QObject execute;
     //ThreadID1->start();
     //execute.moveToThread(ThreadID1);
     //connect(ThreadID1,SIGNAL(started()),this,SLOT(execute()));
+    QTimer *timerRun = new QTimer;
+    //timerRun->moveToThread(ThreadID2);
+    QObject::connect(timerRun,SIGNAL(timeout()),this,SLOT(running()));
+    timerRun->start(10000);
+
 
     //setFixedSize(720, 540);
     CreateFirstPage();
@@ -75,6 +86,7 @@ Widget::Widget(QStackedWidget *parent)
     CreateSecond3Page();
     CreateThird3Page();
     CreateFourth3Page();
+
 }
 
 Widget::~Widget()
@@ -126,7 +138,7 @@ void Widget::CreateSecondPage()
     int inq;//选择服务策略
     int passNum;
     Tour* tTour = (Tour*)malloc(sizeof(Tour));*/
-    Tour *tTour = new Tour;
+    //Tour *tTour = new Tour;
 
 
     labelHint2 = new QLabel(tr("请输入您的旅行计划"));
@@ -736,6 +748,8 @@ void Widget::Confirm()
         //textOrderConfirmed->clear();
         qDebug() << tr("下单成功，欢迎使用更多功能!\n");
         trans5();
+
+
     }
     else
     {
@@ -1294,7 +1308,7 @@ void Widget::execute()
 
                if(Srch->currentState.stateCase == 0)
                {
-                   textSearchContent->append(tr("该旅客还没有出发~距离出发还有")+Srch->currentState.leftTime+tr("小时。\n\n"));
+                   textSearchContent->append(tr("该旅客还没有出发~距离出发还有")+QString::number(Srch->currentState.leftTime)+tr("小时。\n\n"));
                }
                else if(Srch->currentState.stateCase == 1)
                {
@@ -1447,3 +1461,80 @@ void Widget::ConfirmOrder()
     }
 }
 */
+void Widget::running()//假设10s为一小时，不间断地刷新乘客的信息
+{
+    //while(1)
+    if(1)
+    {
+
+        int find = 0;
+        //Tour* prev = hTour;
+        Tour* p = hTour->nextTour;
+        qDebug() << "hTour->nextTour:" << hTour->nextTour;
+        while(p)
+        {
+            currentTime = clock();
+            float currentHour = (currentTime-zeroTime)/CLOCKS_PER_SEC;
+            currentHour /= 10;//10s等于一小时
+            float tempTime = p->startTime;
+            float cur = p->line[1].firstExpressTime;
+            while(cur < tempTime)
+               cur += p->line[1].interval;
+            tempTime = cur;
+            if(currentHour <= tempTime)
+            {
+                p->currentState.stateCase = 0;
+                p->currentState.leftTime = tempTime-currentHour;
+            }
+            else if(currentHour > tempTime)
+            {
+                for(int i = 1; i <= p->RoutesNum; i++)
+                {
+                    if(i != 1)
+                    {
+                        cur = p->line[i].firstExpressTime;
+                        while(cur < tempTime)
+                           cur += p->line[1].interval;
+                        tempTime = cur;
+                    }
+
+                    tempTime += p->line[i].timeSpan;
+                    if(currentHour < tempTime)
+                    {
+                        find = 1;
+                        p->currentState.stateCase = 1;
+                        p->currentState.currentRoute = p->line[i];
+                        p->currentState.percent = (float)(tempTime-currentHour)/p->line[i].timeSpan;
+                        break;
+                    }
+                    else
+                    {
+                        for(int j = 1; j <= p->PassingNum; j++)
+                        {
+                            if(p->line[i].destID == p->passingCity[i].cityNo)
+                            {
+                                tempTime += p->passingCity[i].duration;
+                                if(currentHour < tempTime)
+                                {
+                                    p->currentState.stateCase = 2;
+                                    p->currentState.currentRoute = p->line[i];
+                                    find = 1;
+                                    break;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if(find)
+                       break;
+                }
+                if(currentHour > 0)
+                {
+                    p->currentState.stateCase = 3;
+                    //Sleep(200);//0.2秒后删除改点
+                }
+            }
+            p = p->nextTour;
+        }
+    }
+}

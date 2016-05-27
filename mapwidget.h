@@ -1,6 +1,5 @@
 #ifndef MAPWIDGET
 #define MAPWIDGET
-#endif // MAPWIDGET
 
 #include <QWidget>
 #include <QPainter>
@@ -27,3 +26,5 @@ private:
 
 
 };
+
+#endif

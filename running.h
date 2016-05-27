@@ -2,6 +2,7 @@
 #define RUNNING
 
 #include <QObject>
+#include <QDebug>
 
 class Running: public QObject
 {

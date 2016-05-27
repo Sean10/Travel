@@ -36,10 +36,10 @@ mapWidget::mapWidget(QWidget *parent)
     //this->setStyleSheet("#Map{border-image:url(:/map.jpg);}");
     this->setAutoFillBackground(true);
 
-    QTimer *paintmstimer;
-    paintmstimer = new QTimer;
-    paintmstimer->start(1000/60);
-    QObject::connect(paintmstimer, SIGNAL(timeout()), this, SLOT(update()));
+    QTimer *painttimer;
+    painttimer = new QTimer;
+    painttimer->start(1000/60);
+    QObject::connect(painttimer, SIGNAL(timeout()), this, SLOT(update()));
     //QPalette palette = this->palette();
     //palette.setBrush(QPalette::Background, QBrush(QPixmap(":/map.jpg")));
 

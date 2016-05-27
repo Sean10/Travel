@@ -1,6 +1,7 @@
 //#ifndef ihead
 #include "ihead.h"
 //#endif
+//#ifndef running
 #include "running.h"
 using namespace std;
 
@@ -22,80 +23,11 @@ extern float minTime;
 extern clock_t zeroTime;//系统零点定时
 extern clock_t currentTime;//系统临时计时变量
 
-Running::Running()//假设10s为一小时，不间断地刷新乘客的信息
-{
-    while(1)
-    {
-        int find = 0;
-        //Tour* prev = hTour;
-        Tour* p = hTour->nextTour;
-        while(p)
-        {
-            currentTime = clock();
-            float currentHour = (currentTime-zeroTime)/CLOCKS_PER_SEC;
-            currentHour /= 10;//10s等于一小时
-            float tempTime = p->startTime;
-            float cur = p->line[1].firstExpressTime;
-            while(cur < tempTime)
-               cur += p->line[1].interval;
-            tempTime = cur;
-            if(currentHour <= tempTime)
-            {
-                p->currentState.stateCase = 0;
-                p->currentState.leftTime = tempTime-currentHour;
-            }
-            else if(currentHour > tempTime)
-            {
-                for(int i = 1; i <= p->RoutesNum; i++)
-                {
-                    if(i != 1)
-                    {
-                        cur = p->line[i].firstExpressTime;
-                        while(cur < tempTime)
-                           cur += p->line[1].interval;
-                        tempTime = cur;
-                    }
-
-                    tempTime += p->line[i].timeSpan;
-                    if(currentHour < tempTime)
-                    {
-                        find = 1;
-                        p->currentState.stateCase = 1;
-                        p->currentState.currentRoute = p->line[i];
-                        p->currentState.percent = (float)(tempTime-currentHour)/p->line[i].timeSpan;
-                        break;
-                    }
-                    else
-                    {
-                        for(int j = 1; j <= p->PassingNum; j++)
-                        {
-                            if(p->line[i].destID == p->passingCity[i].cityNo)
-                            {
-                                tempTime += p->passingCity[i].duration;
-                                if(currentHour < tempTime)
-                                {
-                                    p->currentState.stateCase = 2;
-                                    p->currentState.currentRoute = p->line[i];
-                                    find = 1;
-                                    break;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if(find)
-                       break;
-                }
-                if(currentHour > 0)
-                {
-                    p->currentState.stateCase = 3;
-                    //Sleep(200);//0.2秒后删除改点
-                }
-            }
-            p = p->nextTour;
-        }
-    }
+Running::Running(){
+    ;
 }
+
+
 
 Running::~Running()
 {

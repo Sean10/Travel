@@ -1,3 +1,6 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
 #include <QMainWindow>
 #include <QCoreApplication>
 #include <QFile>
@@ -25,9 +28,11 @@
 #include <QTextEdit>
 #include <QIcon>
 #include <QMutex>
-
+#include <QTimer>
 
 //typedef struct Tour Tour;
+//class Running;
+
 
 class Widget : public QStackedWidget
 {
@@ -47,17 +52,16 @@ public:
     void CreateSecond3Page();
     void CreateThird3Page();
     void CreateFourth3Page();
+
 /*
     int Dijkstra1(int i, int j);
     void Dijkstra2(int i, int j, Tour *tTour);
     void Dijkstra3(int i, int j, Tour *tTour);
 */
-
     int passNum;
     int fro, to;//起始城市的标号
     int inq;//选择服务策略
     QString tName;//查询名字
-
 
     int ask;
 
@@ -75,6 +79,7 @@ public slots:
     void trans3_3();
     void trans3_4();
     //void ConfirmOrder();
+    void running();
 
     //void AddPassenger(QString);
     //void SettingStarting(int);
@@ -257,3 +262,4 @@ private:
 };
 
 
+#endif

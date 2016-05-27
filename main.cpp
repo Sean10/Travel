@@ -1,6 +1,9 @@
 #include "ihead.h"
 #include "mainwindow.h"
+#include "running.h"
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
+
+//class Running;
 
 int tMoney;
 int tStart;//旅客出发时间
@@ -19,6 +22,8 @@ int path[20];//路径数组
 Route buff[200];//存储路径缓冲区
 Block mat[maxCity+2][maxCity+2];
 City city[maxCity+2];
+
+//extern void running();
 
 int req, response;
 
@@ -108,12 +113,16 @@ int main(int argc, char *argv[])
     Widget *win = new Widget;
 
 
-
-    QObject *Running;// = new QObject;
-    Running = new QObject;
     QThread *ThreadID2;
     ThreadID2 = new QThread;
-    Running->moveToThread(ThreadID2);
+    //ThreadID2->terminate();
+    //Running *run = new Running;
+    //run->moveToThread(ThreadID2);
+
+
+
+    //QObject *Running;// = new QObject;
+    //Running *run = new Running;
 
     //QStackedWidget widget;// = new QStackedWidget;
     //QThread *ThreadID3;

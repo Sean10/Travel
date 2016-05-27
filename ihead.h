@@ -1,3 +1,6 @@
+#ifndef IHEAD_H
+#define IHEAD_H
+
 #include<iostream>
 #include<cstdio>
 #include<cstring>
@@ -16,11 +19,11 @@ const int maxRoute = 200;//各种航班数目最大值
 
 
 
-void ReadData(void);
+//void ReadData(void);
 //void InputReq(void);
-void Running(void);
-void OutMap(void);
-void init(void);
+//void Running(void);
+//void OutMap(void);
+//void init(void);
 
 typedef struct Route{
     int Transport;//这条路线的交通工具 1为汽车 2为火车 3为飞机
@@ -82,3 +85,4 @@ typedef struct Tour{
 }Tour;//旅客信息结构体
 
 
+#endif
