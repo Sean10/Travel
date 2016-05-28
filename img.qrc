@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/changePlan.ico</file>
+        <file>img/icon.ico</file>
+        <file>img/location.png</file>
+        <file>img/searchBuildPlan.ico</file>
+        <file>img/searchPlan.ico</file>
+        <file>transportData.txt</file>
+        <file>img/cover.jpg</file>
+        <file>img/map.png</file>
+        <file>img/addStopoverCity.ico</file>
+        <file>img/car.ico</file>
+        <file>img/plane.ico</file>
+        <file>img/train.ico</file>
+    </qresource>
+</RCC>

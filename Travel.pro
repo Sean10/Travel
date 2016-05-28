@@ -29,8 +29,6 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 RESOURCES += \
-    map.qrc \
-    location.qrc \
-    transportdata.qrc
+    img.qrc
 
 DISTFILES +=

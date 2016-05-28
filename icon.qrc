@@ -1,7 +1,5 @@
 <RCC>
-    <qresource prefix="/">
-        <file>location.png</file>
-        <file>icon.ico</file>
+    <qresource prefix="/img">
         <file>img/changePlan.ico</file>
         <file>img/searchBuildPlan.ico</file>
         <file>img/searchPlan.ico</file>

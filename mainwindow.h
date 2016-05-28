@@ -7,6 +7,8 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QWidget>
+#include <QPainter>
+#include <QPicture>
 #include <QLabel>
 #include <QLayout>
 #include <QHBoxLayout>
@@ -29,6 +31,10 @@
 #include <QIcon>
 #include <QMutex>
 #include <QTimer>
+#include <QSize>
+#include <QPointF>
+#include <QProgressBar>
+#include <QImage>
 
 //typedef struct Tour Tour;
 //class Running;
@@ -256,6 +262,10 @@ private:
     QComboBox *lineDestination;
     QTextEdit *textContent;
     QTextEdit *textSearchContent;
+
+    QSpinBox *lineStartingTime;
+    QProgressBar *progressTour;
+    QTimer *timerRun;
 
     //QTextEdit *lineTextContent[N];
 

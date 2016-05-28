@@ -1,14 +1,14 @@
 10
-Beijing 765 317
-Shanghai 860 492
-Guangzhou 707 701
-Nanchang 783 552
-Shenyang 861 289
-Wuhan 738 530
-Chengdu 566 518
-Kunming 523 651
-Lanzhou 564 440
-Taiyuan 698 388
+Beijing 382 189
+Shanghai 451 261
+Guangzhou 331 394
+Nanchang 256 297
+Shenyang 529 176
+Wuhan 305 282
+Chengdu 189 245
+Kunming 151 306
+Lanzhou 154 182
+Taiyuan 323 210
 204
  car 0000 Beijing Shenyang 120 5 0 3
  car 0001 Beijing Taiyuan 260 6.5 0 2

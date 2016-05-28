@@ -12,7 +12,8 @@ void Dijkstra3(int i, int j, Tour *tTour);
 QString NumToCity(int);
 void AddPassenger(QString passengerName);
 
-Tour* tTour = new Tour;
+Tour* tTour = new Tour;//add new passenger
+QMutex mutex;
 
 extern int ReqNum;//旅客的数量
 extern int cityNum, routeNum;//城市和交通路线的数量
@@ -55,9 +56,9 @@ Widget::Widget(QStackedWidget *parent)
 
     setWindowTitle("Travel Query Search System V1.1");
     qDebug() << "Init Widget succeed";
-    QIcon exeIcon(":/icon.ico");
+    QIcon exeIcon(":/img/icon.ico");
     this->setWindowIcon(exeIcon);
-
+    resize(612,502);
 
     //connect(ThreadID2,SIGNAL(started()),this,SLOT(running));
 
@@ -68,10 +69,6 @@ Widget::Widget(QStackedWidget *parent)
     //ThreadID1->start();
     //execute.moveToThread(ThreadID1);
     //connect(ThreadID1,SIGNAL(started()),this,SLOT(execute()));
-    QTimer *timerRun = new QTimer;
-    //timerRun->moveToThread(ThreadID2);
-    QObject::connect(timerRun,SIGNAL(timeout()),this,SLOT(running()));
-    timerRun->start(10000);
 
 
     //setFixedSize(720, 540);
@@ -87,6 +84,13 @@ Widget::Widget(QStackedWidget *parent)
     CreateThird3Page();
     CreateFourth3Page();
 
+    timerRun = new QTimer;
+    //QThread *ThreadID2 = new QThread;
+    //timerRun->moveToThread(ThreadID2);
+    //timerRun->moveToThread(ThreadID2);
+    QObject::connect(timerRun,SIGNAL(timeout()),this,SLOT(running()));
+    //timerRun->start(1000);
+    timerRun->start(1000);
 }
 
 Widget::~Widget()
@@ -96,16 +100,38 @@ Widget::~Widget()
 
 void Widget::CreateFirstPage()
 {
+    firstWidget = new QWidget;
 
-    label = new QLabel(tr("欢迎使用旅行模拟系统V1.1"));
+    //QPainter *paintCover = new QPainter(firstWidget);
+    QPalette *paletteCover = new QPalette;
+    QPixmap *pixmapCover = new QPixmap(":/img/cover.jpg");
+    paletteCover->setBrush(QPalette::Background,*pixmapCover);
+    firstWidget->setPalette(*paletteCover);
+    //paintCover->drawPicture(QPointF(0,0),QPicture(":/img/cover."));
+    //QLabel *labelCover = new QLabel;
+    //QImage *imgCover = new QImage(":/img/cover.jpg");
+    //labelCover->setPixmap(QPixmap(":/img/cover.jpg"));
+    //imgCover->scaled(labelCover->height()*0.3,labelCover->width()*0.3,Qt::KeepAspectRatio);
+    //代码缩放失败，无法生效
+    //labelCover->setPixmap(QPixmap::fromImage(*imgCover));
+
+    //paintCover->drawPixmap(QPointF(0,0),QPixmap(":/img/cover.jpg"));
+    //paintCover->drawPixmap(0,0,240,240,*pixCover);
+    //paintCover->scale(0.3,0.3);
+    //labelCover->setScaledContents(true);
+    //labelCover->show();
+    //label = new QLabel(tr("欢迎使用旅行模拟系统V1.1"));
     labelHint = new QLabel(tr("请在以下功能中选择使用"));
 
-    layoutLeft = new QHBoxLayout;
-    layoutLeft->addWidget(labelHint);
+    //layoutLeft = new QHBoxLayout;
+    //layoutLeft->addWidget(labelHint);
 
-    buttonRoute = new QPushButton(tr("查询并制定旅行路线"));
-    buttonState = new QPushButton(tr("查询用户状态"));
-    buttonPlanChange = new QPushButton(tr("改变用户计划"));
+    buttonRoute = new QPushButton(QIcon(":/img/searchBuildPlan"),tr("查询并制定旅行路线"));
+    //buttonRoute->setMinimumHeight(40);
+    buttonState = new QPushButton(QIcon(":/img/searchPlan"),tr("查询用户状态"));
+    //buttonState->setMinimumHeight(40);
+    buttonPlanChange = new QPushButton(QIcon(":/img/changePlan"),tr("改变用户计划"));
+    //buttonPlanChange->setMinimumHeight(40);
 
     connect(buttonRoute,SIGNAL(clicked()),this,SLOT(trans2()));
     connect(buttonState,SIGNAL(clicked(bool)),this,SLOT(trans2_2()));
@@ -113,20 +139,30 @@ void Widget::CreateFirstPage()
     /* 改变计划策略直接采用制定界面 */
 
     firstLayout = new QVBoxLayout;
-    firstLayout->addWidget(label);
-    firstLayout->addLayout(layoutLeft);
+    //firstLayout->addWidget(label);
+    //firstLayout->addLayout(layoutLeft);
+
+    //firstLayout->addWidget(labelCover);
+    //firstLayout->addWidget(paintCover);
+    firstLayout->addStretch();
+    firstLayout->addWidget(labelHint,0,Qt::Alignment(1));
     firstLayout->addWidget(buttonRoute);
     firstLayout->addWidget(buttonState);
     firstLayout->addWidget(buttonPlanChange);
 
     //setFixedHeight(sizeHint().height());
 
-    firstWidget = new QWidget;
+
     firstWidget->setLayout(firstLayout);
+
+    //QPalette *backgroundColor = new QPalette;
+    //backgroundColor->setColor(QPalette::Background,Qt::);
+    //firstWidget->setPalette(backgroundColor);
+    //firstWidget->setStyleSheet("background-color:rgb(176,224,220)");
     this->addWidget(firstWidget);
 
-    layout = new QVBoxLayout;
-    layout->addWidget(this);
+    //layout = new QVBoxLayout;
+    //layout->addWidget(this);
 
     zeroTime = clock();//系统零点时刻定时
     memset(buff, 0, sizeof(buff));
@@ -166,6 +202,8 @@ void Widget::CreateSecondPage()
     lineDestination = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineDestination->addItem(NumToCity(i));
+    //lineDestination->
+    //lineDestination->
 
 
     //connect(lineStarting, SIGNAL(currentIndexChanged(QString)), this, SLOT(SettingStarting(currentIndex())));
@@ -193,13 +231,14 @@ void Widget::CreateSecondPage()
     secondLayout1->addWidget(lineDestination);
 
     QPushButton *addStopoverCity;
-    addStopoverCity = new QPushButton(tr("添加停留城市"));
+    addStopoverCity = new QPushButton(QIcon(":/img/addStopoverCity"),tr("添加停留城市"));
     passNum = 0;
 
     connect(addStopoverCity, SIGNAL(clicked(bool)),this,SLOT(AddStopoverCityAndTime()));
 
     //labelHint3 = new QLabel(tr("Please input the stopover cities:"));
     labelStopoverCity2_1 = new QLabel(tr("停留城市:"));
+    //labelStopoverCity2_1->setPixmap(QPixmap(":/img/stopoverCity"));
     lineStopoverCity2_1 = new QComboBox;
     for(int i = 0; i < cityNum; i++)
         lineStopoverCity2_1->addItem(NumToCity(i));
@@ -386,7 +425,7 @@ void Widget::CreateSecondPage()
 
     secondLayout = new QVBoxLayout;
     secondLayout->addLayout(secondLayoutName);
-    secondLayout->addWidget(label);
+    //secondLayout->addWidget(label);
     secondLayout->addWidget(labelHint2);
     secondLayout->addLayout(secondLayout1);
     secondLayout->addWidget(addStopoverCity);
@@ -410,6 +449,16 @@ void Widget::CreateSecondPage()
 
 void Widget::CreateThirdPage()
 {
+    QLabel *labelStartingTime = new QLabel(tr("请选择出发时间：（以0:00为起始）"));
+    lineStartingTime = new QSpinBox;
+    lineStartingTime->setRange(0,24);
+    lineStartingTime->setValue(0);
+    labelStartingTime->setBuddy(lineStartingTime);
+
+    QVBoxLayout *layoutStartingTime = new QVBoxLayout;
+    layoutStartingTime->addWidget(labelStartingTime);
+    layoutStartingTime->addWidget(lineStartingTime);
+
     labelChooseStrategy = new QLabel(tr("请选择旅行计划策略:"));
     strategyValue = new QRadioButton(tr("最少消费策略"));
     strategyValue->setChecked(true);
@@ -442,6 +491,8 @@ void Widget::CreateThirdPage()
     layoutStrategyValueTime->addStretch();
 
     layoutStrategy = new QVBoxLayout;
+    layoutStrategy->addLayout(layoutStartingTime);
+    layoutStrategy->addStretch();
     layoutStrategy->addWidget(labelChooseStrategy);
     layoutStrategy->addWidget(strategyValue);
     layoutStrategy->addWidget(strategyTime);
@@ -458,8 +509,7 @@ void Widget::CreateThirdPage()
 
 void Widget::CreateFourthPage()
 {
-    labelOrder = new QLabel(tr("According to your travel plan and chosen strategy, "
-                               "the route calculated is as following:"));
+    labelOrder = new QLabel(tr("根据您选择的计划，计算得到的路线为:"));
 
     textContent = new QTextEdit;
 
@@ -543,12 +593,26 @@ void Widget::CreateThird2Page()
 
     textSearchContent = new QTextEdit;
 
+    progressTour = new QProgressBar;
+    //progressTour->setToolTip(QStringLiteral("离抵达还有100%路程"));
+    //progressTour->setFormat("%");
+    progressTour->setMaximum(100);
+    progressTour->setValue(0);
 
-/*
- *
- *Add the chosen information
- *
- */
+    QString strQSS = "QProgressBar {color: white;} \
+        QProgressBar:horizontal { \
+        text-align: center; \
+        border: 1px solid rgb(115, 200, 60); \
+        background: rgb(145, 210, 75, 150); \
+    } \
+    QProgressBar::chunk:horizontal { \
+        background: rgb(145, 210, 75); \
+    }";
+
+    progressTour->setStyleSheet(strQSS);
+
+
+
     go2_4 = new QPushButton(tr("&Enter Real-Time Maps"));
     connect(go2_4,SIGNAL(clicked(bool)), this,SLOT(trans2_4()));
 
@@ -563,6 +627,7 @@ void Widget::CreateThird2Page()
     layoutThird2 = new QVBoxLayout;
     layoutThird2->addWidget(labelHintTour);
     layoutThird2->addWidget(textSearchContent);
+    layoutThird2->addWidget(progressTour);
     layoutThird2->addLayout(layoutButtonGoBack2_4);
 
     third2Widget = new QWidget;
@@ -662,7 +727,7 @@ void Widget::CreateThird3Page()
     thirdLayout3->addWidget(lineStopoverTime);
 
     layoutThird3 = new QVBoxLayout;
-    layoutThird3->addWidget(label);
+    //layoutThird3->addWidget(label);
     layoutThird3->addWidget(labelHint2);
     layoutThird3->addLayout(secondLayout1);
     layoutThird3->addWidget(labelHint3);
@@ -734,20 +799,17 @@ void Widget::Confirm()
                                                  QMessageBox::Yes | QMessageBox::No,
                                                  QMessageBox::Yes))
     {
+        //timerRun->start(1000);
         ask = 1;
-        if(!curTour)
-        {
-           hTour->nextTour = tTour;
-           curTour = tTour;
-        }
-        else
-        {
-            curTour->nextTour = tTour;
-            curTour = tTour;
-        }
-        //textOrderConfirmed->clear();
-        qDebug() << tr("下单成功，欢迎使用更多功能!\n");
-        trans5();
+                curTour = hTour;
+                while(curTour->nextTour)
+                {
+                     curTour = curTour->nextTour;
+                }
+                curTour->nextTour = tTour;
+                //textOrderConfirmed->clear();
+                qDebug() << tr("下单成功，欢迎使用更多功能!\n");
+                trans5();
 
 
     }
@@ -1048,18 +1110,20 @@ void Widget::SettingStopoverCity(int num, int cityNum)
 void Widget::execute()
 {
     loop2:
-    qDebug() << "Thread has survived";
+    qDebug() << "Execute has survived";
     if(req == 1)
     {
         //passNum作为成员变量
 
         //Tour* tTour = (Tour*)malloc(sizeof(Tour));
-
+        //tTour = new Tour;
+        /* this is the key to add passenger */
         //printf("请输入您的姓名：\n");
         //scanf("%s", tTour->TourName);
         qDebug() << tr("姓名:") << lineTourName->text();
         //qDebug() << tTour->TourName;
-        tTour->TourName = lineTourName->text();
+        //if(lineTourName->text() != tTour->TourName)
+            tTour->TourName = lineTourName->text();
         //qDebug() << tTour->TourName;
         //printf("请输入起始城市和目的城市：\n");
         //scanf("%s%s", tTour->startin, tTour->destin);
@@ -1190,7 +1254,7 @@ void Widget::execute()
             //printf("请输入您要出发的时间(距离今天凌晨0:00的时间，以小时为单位)：\n");
             //scanf("%f", &tTour->startTime);
             //tStart %= 24;//以24小时为一个航班表循环
-            tTour->startTime = 0;
+            tTour->startTime = lineStartingTime->value();
             /* 待追加选择出发时间 */
 
             for(int i = 1; i <= cityNum; i++)//刷新地图最小权值,每次计算都要刷新！
@@ -1228,7 +1292,8 @@ void Widget::execute()
             tTour->service = 3;
             //printf("请输入您要出发的时间(距离今天凌晨0:00的时间，以小时为单位)：\n");
             //scanf("%f", &tTour->startTime);
-            tTour->startTime = 0;
+
+            tTour->startTime = lineStartingTime->value();
             /* 待选择出发时间 */
             for(int i = 1; i <= cityNum; i++)//刷新地图最小权值,每次计算都要刷新！
                for(int j = 1; j <= cityNum; j++)
@@ -1258,7 +1323,7 @@ void Widget::execute()
             {
                 textContent->setPlainText(tr("没有找到限定时间内的路线！请重新输入：\n"));
 
-                goto loop4;
+                //goto loop4;
                 qDebug() << tr("this is a error4\n");
             }
             else
@@ -1280,7 +1345,7 @@ void Widget::execute()
         {
             //printf("输入有误，请重新输入！\n");
             qDebug() << "This is an error3\n";
-            goto loop3;
+            //goto loop3;
         }
         req = 0;
 
@@ -1289,50 +1354,52 @@ void Widget::execute()
     }
 
     else if(req == 2)//查询旅客状态
-    {
-
-        int flag2 = 0;
-        //printf("请输入您要查询的名字：\n\n");
-        //scanf("%s", tName);
-        tName = lineSearchTourist1->text();
-        Tour* Srch = hTour->nextTour;
-        qDebug() << "No Srch";
-        while(Srch)
         {
-            qDebug() << "Here is Srch ";
-            if(!QString::compare(tName, Srch->TourName, Qt::CaseSensitive))
+
+            int flag2 = 0;
+            //printf("请输入您要查询的名字：\n\n");
+            //scanf("%s", tName);
+            tName = lineSearchTourist1->text();
+            Tour* Srch = hTour->nextTour;
+            qDebug() << "No Srch";
+            while(Srch)
             {
-               flag2 = 1;
-               qDebug() << tr("已查询到该名旅客相关的信息，您也可以选择打开地图。\n\n");
-               textSearchContent->setPlainText(tr("已查询到该名")+tName+tr("旅客相关的信息，您也可以选择打开地图。"));
+                qDebug() << "Here is Srch ";
+                if(!QString::compare(tName, Srch->TourName, Qt::CaseSensitive))
+                {
+                   flag2 = 1;
+                   qDebug() << tr("已查询到该名旅客相关的信息，您也可以选择打开地图。\n\n");
+                   textSearchContent->setPlainText(tr("已查询到该名")+tName+tr("旅客相关的信息，您也可以选择打开地图。"));
 
-               if(Srch->currentState.stateCase == 0)
-               {
-                   textSearchContent->append(tr("该旅客还没有出发~距离出发还有")+QString::number(Srch->currentState.leftTime)+tr("小时。\n\n"));
-               }
-               else if(Srch->currentState.stateCase == 1)
-               {
-                   textSearchContent->append(tr("该旅客出发地为")+Srch->startin+tr("，目的地为")+Srch->destin+tr("，目前在编号为")
-                           +Srch->currentState.currentRoute.id+tr("、从")+Srch->currentState.currentRoute.startin
-                           +tr("开往")+Srch->currentState.currentRoute.destin+tr("的路线上，距离到达本段目的地还有")
-                           +(1-Srch->currentState.percent)*(Srch->currentState.currentRoute.timeSpan)+tr("小时。\n\n"));
+                   if(Srch->currentState.stateCase == 0)
+                   {
+                       textSearchContent->append(tr("该旅客还没有出发~距离出发还有")+QString::number(Srch->currentState.leftTime)+tr("小时。\n\n"));
+                   }
+                   else if(Srch->currentState.stateCase == 1)//这里输出有问题我按照我的改了一下
+                   {
+                       textSearchContent->append(tr("该旅客出发地为")+Srch->startin+tr("，目的地为")+Srch->destin+tr("，目前在编号为")
+                               +Srch->currentState.currentRoute.id+tr("、从")+Srch->currentState.currentRoute.startin
+                               +tr("开往")+Srch->currentState.currentRoute.destin+tr("的路线上，距离到达本段目的地还有")
+                               +QString::number((1-Srch->currentState.percent)*(Srch->currentState.currentRoute.timeSpan))+tr("小时。\n\n"));
 
-               }
-               else if(Srch->currentState.stateCase == 2)
-               {
-                   textSearchContent->append(tr("该旅客目前停留在")+Srch->currentState.currentRoute.destin+tr("\n"));
-               }
-               else if(Srch->currentState.stateCase == 3)
-               {
-                   textSearchContent->append(tr("该旅客已经到达目的地")+Srch->destin+tr("，系统将在不久后退出对本旅客的定位，请查询相关日志文件")
-                                             +Srch->TourName+tr(".txt。\n\n"));
-               }
+                   }
+                   else if(Srch->currentState.stateCase == 2)
+                   {
+                       //printf("\n该旅客目前停留在%s, 还有%.1f小时将进入下一段路线行程。\n", Srch->currentState.currentRoute.destin, );
+                       textSearchContent->append(tr("该旅客目前停留在")+Srch->currentState.currentRoute.destin+tr(", 还有")+QString::number(Srch->currentState.leftTime)+tr("小时将进入下一段路线行程。")+("\n"));
+                   }
+                   else if(Srch->currentState.stateCase == 3)
+                   {
+                       textSearchContent->append(tr("该旅客已经到达目的地")+Srch->destin+tr("，系统将在不久后退出对本旅客的定位，请查询相关日志文件")
+                                                 +Srch->TourName+tr(".txt。\n\n"));
+                   }
+                   break;
+                }
+                Srch = Srch->nextTour;
             }
-            Srch = Srch->nextTour;
+            if(!flag2)
+                textSearchContent->append(tr("未查询到相关旅客信息，请确认是否下单成功或者该旅客已经到站！\n\n"));
         }
-        if(!flag2)
-            textSearchContent->append(tr("未查询到相关旅客信息，请确认是否下单成功或者该旅客已经到站！\n\n"));
-    }
     else if(req == 3)//改变旅游计划
     {
         ;
@@ -1464,6 +1531,7 @@ void Widget::ConfirmOrder()
 void Widget::running()//假设10s为一小时，不间断地刷新乘客的信息
 {
     //while(1)
+    mutex.lock();
     if(1)
     {
 
@@ -1494,7 +1562,7 @@ void Widget::running()//假设10s为一小时，不间断地刷新乘客的信�
                     {
                         cur = p->line[i].firstExpressTime;
                         while(cur < tempTime)
-                           cur += p->line[1].interval;
+                           cur += p->line[i].interval;//为什么这里跟我的不一样==
                         tempTime = cur;
                     }
 
@@ -1504,31 +1572,36 @@ void Widget::running()//假设10s为一小时，不间断地刷新乘客的信�
                         find = 1;
                         p->currentState.stateCase = 1;
                         p->currentState.currentRoute = p->line[i];
-                        p->currentState.percent = (float)(tempTime-currentHour)/p->line[i].timeSpan;
-                        break;
+                        p->currentState.percent = 1-(float)(tempTime-currentHour)/p->line[i].timeSpan;
+                        p->currentState.leftTime = tempTime-currentHour;
+                        //break;//这里也是==
                     }
                     else
                     {
                         for(int j = 1; j <= p->PassingNum; j++)
                         {
-                            if(p->line[i].destID == p->passingCity[i].cityNo)
-                            {
-                                tempTime += p->passingCity[i].duration;
-                                if(currentHour < tempTime)
-                                {
-                                    p->currentState.stateCase = 2;
-                                    p->currentState.currentRoute = p->line[i];
-                                    find = 1;
-                                    break;
-                                }
-                                break;
-                            }
+                             if(!QString::compare(p->line[i].destin, p->passingCity[j].cityName))
+                             {
+                                  tempTime += p->passingCity[j].duration;
+                                  if(currentHour < tempTime)
+                                  {
+                                       p->currentState.stateCase = 2;
+                                       p->currentState.currentRoute = p->line[i];
+                                       p->currentState.leftTime = tempTime-currentHour;
+                                       find = 1;
+                                       break;
+                                  }
+                             }
                         }
                     }
                     if(find)
+                    {
+                       currentHour = 0;
                        break;
+                    }
+
                 }
-                if(currentHour > 0)
+                if(currentHour > tempTime)
                 {
                     p->currentState.stateCase = 3;
                     //Sleep(200);//0.2秒后删除改点
@@ -1537,4 +1610,6 @@ void Widget::running()//假设10s为一小时，不间断地刷新乘客的信�
             p = p->nextTour;
         }
     }
+    progressTour->setValue(tTour->currentState.percent);
+    mutex.unlock();
 }

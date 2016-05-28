@@ -115,18 +115,6 @@ int main(int argc, char *argv[])
 
     QThread *ThreadID2;
     ThreadID2 = new QThread;
-    //ThreadID2->terminate();
-    //Running *run = new Running;
-    //run->moveToThread(ThreadID2);
-
-
-
-    //QObject *Running;// = new QObject;
-    //Running *run = new Running;
-
-    //QStackedWidget widget;// = new QStackedWidget;
-    //QThread *ThreadID3;
-    //win->moveToThread(ThreadID3);
 
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(codec);
