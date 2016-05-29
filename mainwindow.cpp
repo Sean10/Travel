@@ -11,9 +11,10 @@ void Dijkstra2(int i, int j, Tour *tTour);
 void Dijkstra3(int i, int j, Tour *tTour);
 QString NumToCity(int);
 void AddPassenger(QString passengerName);
-
-Tour* tTour = new Tour;//add new passenger
+// = new Tour;//add new passenger
 QMutex mutex;
+
+Tour* tTour = new Tour;
 
 extern int ReqNum;//旅客的数量
 extern int cityNum, routeNum;//城市和交通路线的数量
@@ -58,7 +59,7 @@ Widget::Widget(QStackedWidget *parent)
     qDebug() << "Init Widget succeed";
     QIcon exeIcon(":/img/icon.ico");
     this->setWindowIcon(exeIcon);
-    resize(612,502);
+
 
     //connect(ThreadID2,SIGNAL(started()),this,SLOT(running));
 
@@ -90,7 +91,7 @@ Widget::Widget(QStackedWidget *parent)
     //timerRun->moveToThread(ThreadID2);
     QObject::connect(timerRun,SIGNAL(timeout()),this,SLOT(running()));
     //timerRun->start(1000);
-    timerRun->start(1000);
+    //timerRun->start(1000);
 }
 
 Widget::~Widget()
@@ -102,15 +103,15 @@ void Widget::CreateFirstPage()
 {
     firstWidget = new QWidget;
 
-    //QPainter *paintCover = new QPainter(firstWidget);
-    QPalette *paletteCover = new QPalette;
-    QPixmap *pixmapCover = new QPixmap(":/img/cover.jpg");
-    paletteCover->setBrush(QPalette::Background,*pixmapCover);
-    firstWidget->setPalette(*paletteCover);
+    QPainter *paintCover = new QPainter(firstWidget);
+    //QPalette *paletteCover = new QPalette;
+    //QPixmap *pixmapCover = new QPixmap(":/img/cover.jpg");
+    //paletteCover->setBrush(QPalette::Background,*pixmapCover);
+    //firstWidget->setPalette(*paletteCover);
     //paintCover->drawPicture(QPointF(0,0),QPicture(":/img/cover."));
-    //QLabel *labelCover = new QLabel;
+    QLabel *labelCover = new QLabel;
     //QImage *imgCover = new QImage(":/img/cover.jpg");
-    //labelCover->setPixmap(QPixmap(":/img/cover.jpg"));
+    labelCover->setPixmap(QPixmap(":/img/cover.jpg"));
     //imgCover->scaled(labelCover->height()*0.3,labelCover->width()*0.3,Qt::KeepAspectRatio);
     //代码缩放失败，无法生效
     //labelCover->setPixmap(QPixmap::fromImage(*imgCover));
@@ -142,7 +143,7 @@ void Widget::CreateFirstPage()
     //firstLayout->addWidget(label);
     //firstLayout->addLayout(layoutLeft);
 
-    //firstLayout->addWidget(labelCover);
+    firstLayout->addWidget(labelCover);
     //firstLayout->addWidget(paintCover);
     firstLayout->addStretch();
     firstLayout->addWidget(labelHint,0,Qt::Alignment(1));
@@ -589,7 +590,7 @@ void Widget::CreateSecond2Page()
 
 void Widget::CreateThird2Page()
 {
-    labelHintTour = new QLabel(tr("Dear No. %d tourist:"));
+    //labelHintTour = new QLabel(tr("Dear No. %d tourist:"));
 
     textSearchContent = new QTextEdit;
 
@@ -625,7 +626,7 @@ void Widget::CreateThird2Page()
     layoutButtonGoBack2_4->addWidget(back2_2);
 
     layoutThird2 = new QVBoxLayout;
-    layoutThird2->addWidget(labelHintTour);
+    //layoutThird2->addWidget(labelHintTour);
     layoutThird2->addWidget(textSearchContent);
     layoutThird2->addWidget(progressTour);
     layoutThird2->addLayout(layoutButtonGoBack2_4);
@@ -783,6 +784,8 @@ void Widget::trans3()
 void Widget::trans4()
 {
     this->setCurrentWidget(fourthWidget);
+    //tTour = new Tour;
+    //qDebug() << "(new)tTour:" << tTour;
     execute();
 }
 
@@ -800,18 +803,22 @@ void Widget::Confirm()
                                                  QMessageBox::Yes))
     {
         //timerRun->start(1000);
+        timerRun->start(1000);
         ask = 1;
-                curTour = hTour;
-                while(curTour->nextTour)
-                {
-                     curTour = curTour->nextTour;
-                }
-                curTour->nextTour = tTour;
-                //textOrderConfirmed->clear();
-                qDebug() << tr("下单成功，欢迎使用更多功能!\n");
-                trans5();
+        curTour = hTour;
+        qDebug() << "(curr)tTour:" << tTour;
+        while(curTour->nextTour)
+        {
+            curTour = curTour->nextTour;
+        }
+        if(tTour != curTour)
+            curTour->nextTour = tTour;
 
-
+        qDebug() << "curTour:" << curTour;
+        qDebug() << "curTour->nextTour:" << curTour->nextTour;
+        //textOrderConfirmed->clear();
+        qDebug() << tr("下单成功，欢迎使用更多功能!\n");
+        trans5();
     }
     else
     {
@@ -1113,24 +1120,18 @@ void Widget::execute()
     qDebug() << "Execute has survived";
     if(req == 1)
     {
-        //passNum作为成员变量
-
-        //Tour* tTour = (Tour*)malloc(sizeof(Tour));
+        qDebug() << "(execute)tTour:" << tTour;
+        //tTour = (Tour*)malloc(sizeof(Tour));
         //tTour = new Tour;
         /* this is the key to add passenger */
-        //printf("请输入您的姓名：\n");
-        //scanf("%s", tTour->TourName);
-        qDebug() << tr("姓名:") << lineTourName->text();
+        //qDebug() << tr("姓名:") << lineTourName->text();
         //qDebug() << tTour->TourName;
         //if(lineTourName->text() != tTour->TourName)
-            tTour->TourName = lineTourName->text();
+        tTour->TourName = lineTourName->text();
         //qDebug() << tTour->TourName;
-        //printf("请输入起始城市和目的城市：\n");
-        //scanf("%s%s", tTour->startin, tTour->destin);
 
         tTour->startin = NumToCityStr(lineStarting->currentIndex());
         tTour->destin = NumToCityStr(lineDestination->currentIndex());
-
 
         for(int i = 1; i <= cityNum; i++)
         {
@@ -1139,16 +1140,13 @@ void Widget::execute()
             if(!QString::compare(tTour->destin, city[i].cityName,Qt::CaseSensitive))
                to = i;
         }
-        //printf("请输入中间经过的城市个数：\n");
-
-        //scanf("%d", &passNum);
+        // 中间经过的城市个数
         tTour->PassingNum = passNum;
         if(passNum)
         {
-            //printf("请输入停留的城市名称以及停留的时间(以小时计)：\n");
+            // 停留的城市名称以及停留的时间(以小时计)
             for(int i = 1; i <= passNum; i++)
             {
-               //scanf("%s%d", tTour->passingCity[i].cityName, &tTour->passingCity[i].duration);
                tTour->passingCity[i].cityName = GetStopoverCity(i);
                tTour->passingCity[i].duration = GetStopoverTime(i);
                for(int j = 1; j <= cityNum; j++)
@@ -1538,12 +1536,13 @@ void Widget::running()//假设10s为一小时，不间断地刷新乘客的信�
         int find = 0;
         //Tour* prev = hTour;
         Tour* p = hTour->nextTour;
+        qDebug() << "hTour:" << hTour;
         qDebug() << "hTour->nextTour:" << hTour->nextTour;
         while(p)
         {
             currentTime = clock();
             float currentHour = (currentTime-zeroTime)/CLOCKS_PER_SEC;
-            currentHour /= 10;//10s等于一小时
+            currentHour /= 3;//10s等于一小时
             float tempTime = p->startTime;
             float cur = p->line[1].firstExpressTime;
             while(cur < tempTime)
@@ -1610,6 +1609,8 @@ void Widget::running()//假设10s为一小时，不间断地刷新乘客的信�
             p = p->nextTour;
         }
     }
-    progressTour->setValue(tTour->currentState.percent);
+    //qDebug() << "float:" << tTour->currentState.percent;
+    //qDebug() << "int:" << (int)tTour->currentState.percent;
+    progressTour->setValue((int)(tTour->currentState.percent*100));
     mutex.unlock();
 }

@@ -33,7 +33,7 @@ typedef struct Route{
     //QString startin;
     //QString destin;
     char destin[30];//目的地城市
-    int startID, destID;//出发城市和目的城市的编号
+    int startID, destID;//出发城市和目的城市的编号,没有被写入确实数字
     int price;//这条路线的价格
     float timeSpan;//这条路线的时间跨度 (h)
     float firstExpressTime;//这趟航班的首发时间 (h)
