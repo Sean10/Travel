@@ -16,17 +16,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    inputreq.cpp \
-    running.cpp \
     mapwidget.cpp
 
 HEADERS  += mainwindow.h \
     ihead.h \
-    inputreq.h \
-    running.h \
     mapwidget.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    form.ui
 
 RESOURCES += \
     img.qrc

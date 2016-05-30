@@ -6,11 +6,15 @@
         <file>img/searchBuildPlan.ico</file>
         <file>img/searchPlan.ico</file>
         <file>transportData.txt</file>
-        <file>img/cover.jpg</file>
         <file>img/map.png</file>
         <file>img/addStopoverCity.ico</file>
         <file>img/car.ico</file>
         <file>img/plane.ico</file>
         <file>img/train.ico</file>
+        <file>img/splash.png</file>
+        <file>img/splash_2.gif</file>
+        <file>img/close.ico</file>
+        <file>log.txt</file>
+        <file>img/cover.jpg</file>
     </qresource>
 </RCC>

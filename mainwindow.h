@@ -1,5 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#include "ihead.h"
+#include "mapwidget.h"
 
 #include <QMainWindow>
 #include <QCoreApplication>
@@ -35,6 +37,9 @@
 #include <QPointF>
 #include <QProgressBar>
 #include <QImage>
+#include <QSplashScreen>
+#include <QElapsedTimer>
+#include <QGridLayout>
 
 //typedef struct Tour Tour;
 //class Running;
@@ -45,9 +50,12 @@ class Widget : public QStackedWidget
     Q_OBJECT
 
 public:
+    friend class mapWidget;
+    friend QPixmap mapWidget::setPointGraph();
+
     Widget(QStackedWidget *parent = 0);
     ~Widget();
-    void CreateFirstPage();
+    void CreateFirstPage();//生成界面
     void CreateSecondPage();
     void CreateThirdPage();
     void CreateFourthPage();
@@ -68,16 +76,17 @@ public:
     int fro, to;//起始城市的标号
     int inq;//选择服务策略
     QString tName;//查询名字
+    //Tour* tTour;
 
     int ask;
 
 public slots:
-    void trans1();
+    void trans1();//显示界面
     void trans2();
     void trans3();
     void trans4();
     void trans5();
-    void Confirm();
+    void Confirm();//确认对话框
     void trans2_2();
     void trans2_3();
     void trans2_4();
@@ -99,9 +108,6 @@ public slots:
     void SettingStrategy1();
     void SettingStrategy2();
     void SettingStrategy3();
-
-
-protected:
 
 
 
@@ -266,6 +272,9 @@ private:
     QSpinBox *lineStartingTime;
     QProgressBar *progressTour;
     QTimer *timerRun;
+    QWidget *firstWindowWidget;
+
+
 
     //QTextEdit *lineTextContent[N];
 

@@ -34,7 +34,7 @@ mapWidget::mapWidget(QWidget *parent)
     this->setFixedSize(612,502);
     //this->setStyleSheet("#Map{border-image:url(:/map.jpg);}");
     //this->setStyleSheet("#Map{border-image:url(:/map.jpg);}");
-    this->setAutoFillBackground(true);
+    this->setAutoFillBackground(false);
 
     QTimer *painttimer;
     painttimer = new QTimer;
@@ -61,6 +61,7 @@ void mapWidget::paintEvent(QPaintEvent *)
     QPixmap pngBackground;
     pngBackground.load(":/img/map.png");
     mapBackground.scale(1,1);
+    mapBackground.setWindow(0,0,612,502);
     mapBackground.setRenderHint(QPainter::Antialiasing, true);
     mapBackground.drawPixmap(0,0,612,502,pngBackground);
 
@@ -68,7 +69,7 @@ void mapWidget::paintEvent(QPaintEvent *)
     //Widget *fatherPtr = (Widget *)parentWidget();
     //if (fatherPtr->currentTraveler != -1)
     //{
-    mapLocation.scale(0.8,0.8);
+    mapLocation.scale(1,1);
     mapLocation.setRenderHint(QPainter::Antialiasing, true);
     //mapLocation.translate(250,200);
     //mapLocation.setViewport(0,0,500,400);
@@ -76,6 +77,10 @@ void mapWidget::paintEvent(QPaintEvent *)
     //mapLocation.drawPixmap(setPointPos(), QPixmap(":/location.png"));
     mapLocation.drawPixmap(setPointPos(),setPointGraph());
     //mapLocation.set
+
+
+
+
     update();
     //}
 }
@@ -83,7 +88,10 @@ void mapWidget::paintEvent(QPaintEvent *)
 QPixmap mapWidget::setPointGraph()
 {
 
-    qDebug() << "transport:" << tTour->currentState.currentRoute.Transport;
+    //qDebug() << "transport:" << tTour->currentState.currentRoute.Transport;
+    if(tTour->currentState.stateCase != 1)
+        return QPixmap(":/img/location.png");
+
     switch(tTour->currentState.currentRoute.Transport)
     {
     case 1:
@@ -93,6 +101,7 @@ QPixmap mapWidget::setPointGraph()
     case 3:
         return QPixmap(":/img/plane.ico");
     default:
+        qDebug() << "transport is wrong;";
         return QPixmap(":/img/location.png");
     }
 }
@@ -107,10 +116,32 @@ QPointF mapWidget::setPointPos()
         pointPos = getCityCorner(CityToNum(tTour->startin));
         break;
     case 1:
-        pointPos = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin))
-                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)))*(qreal)tTour->currentState.percent
+        double x,y;
+        pointPos = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin))\
+                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)))*(qreal)tTour->currentState.percent\
                 +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin));
+        /*if(getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).x()\
+                -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x())
+            x = ((getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).x())
+                    -(getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x()))*(qreal)tTour->currentState.percent
+                +(getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x());
+        else
+            x = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).x()
+                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x())*(1-(qreal)tTour->currentState.percent)
+                +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x();
 
+        if(getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).y()\
+                -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y())
+            y = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).y()
+                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y())*(qreal)tTour->currentState.percent
+                +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y();
+        else
+            y = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).y()
+                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y())*(1-(qreal)tTour->currentState.percent)
+                +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y();*/
+
+        //pointPos.setX(x);
+        //pointPos.setY(y);
         //qDebug() << "percent:" << tTour->currentState.percent;
         //qDebug() << "destID:" << tTour->currentState.currentRoute.destID;
         //qDebug() << "startID:" << tTour->currentState.currentRoute.startID;
@@ -120,7 +151,7 @@ QPointF mapWidget::setPointPos()
                   //  getCityCorner(tTour->currentState.currentRoute.startID).y;
         break;
     case 2:
-        pointPos = getCityCorner(tTour->currentState.currentRoute.startID);
+        pointPos = getCityCorner(CityToNum(tTour->currentState.currentRoute.destin));
         break;
     case 3:
         pointPos = getCityCorner(CityToNum(tTour->destin));
@@ -129,55 +160,59 @@ QPointF mapWidget::setPointPos()
         qDebug() << "PointPos is in error\n";
     }
         qDebug() << "State:" << tTour->currentState.stateCase;
+        qDebug() << tTour->currentState.percent;
+        qDebug() << CityToNum(tTour->currentState.currentRoute.startin) << CityToNum(tTour->currentState.currentRoute.destin);
         qDebug() << "x,y:" << pointPos;
     return pointPos;
 }
 
 QPointF mapWidget::getCityCorner(int city)
 {
-    int x, y;
+    double x, y;
     switch (city)
     {
     case 1:
-        x = 382 - 19*0.8;
-        y = 189 - 51*0.8;
+        x = 382 - 15* 1 ;
+        y = 188 - 39* 1 ;
         break;
     case 2:
-        x = 451 - 19*0.8;
-        y = 261 - 51*0.8;
+        x = 451 - 15* 1 ;
+        y = 261 - 39* 1 ;
         break;
     case 3:
-        x = 331 - 19*0.8;
-        y = 394 - 51*0.8;
+        x = 331 - 15* 1 ;
+        y = 397 - 39* 1 ;
         break;
     case 4:
-        x = 256 - 19*0.8;
-        y = 297 - 51*0.8;
+        x = 352 - 15* 1 ;
+        y = 286 - 39* 1 ;
         break;
     case 5:
-        x = 529 - 19*0.8;
-        y = 176 - 51*0.8;
+        x = 530 - 15* 1 ;
+        y = 180 - 39* 1 ;
         break;
     case 6:
-        x = 305 - 19*0.8;
-        y = 282 - 51*0.8;
+        x = 305 - 15* 1 ;
+        y = 282 - 39* 1 ;
         break;
     case 7:
-        x = 189 - 19*0.8;
-        y = 245 - 51*0.8;
+        x = 189 - 15* 1 ;
+        y = 245 - 39* 1 ;
         break;
     case 8:
-        x = 151 - 19*0.8;
-        y = 306 - 51*0.8;
+        x = 151 - 15* 1 ;
+        y = 302 - 39* 1 ;
         break;
     case 9:
-        x = 154 - 19*0.8;
-        y = 182 - 51*0.8;
+        x = 154 - 15* 1 ;
+        y = 182 - 39* 1 ;
         break;
     case 10:
-        x = 323 - 19*0.8;
-        y = 210 - 51*0.8;
+        x = 323 - 15* 1 ;
+        y = 210 - 39* 1 ;
         break;
+    default:
+        qDebug() << "pos is wrong:";
     }
 
     return QPointF(x, y);
