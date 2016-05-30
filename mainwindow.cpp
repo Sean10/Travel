@@ -10,12 +10,14 @@ int Dijkstra1(int i, int j);
 void Dijkstra2(int i, int j, Tour *tTour);
 void Dijkstra3(int i, int j, Tour *tTour);
 QString NumToCity(int);
+
 // = new Tour;//add new passenger
 //QMutex mutex;
 extern QFile *logFile;
 extern QTextStream *out;
 
 Tour* tTour = new Tour;
+
 
 extern int ReqNum;//旅客的数量
 extern int cityNum, routeNum;//城市和交通路线的数量
@@ -60,7 +62,6 @@ Widget::Widget(QStackedWidget *parent)
     qDebug() << "Init Widget succeed";
     QIcon exeIcon(":/img/icon.ico");
     this->setWindowIcon(exeIcon);
-    //this->setWindowFlags(Qt::WindowMinimizeButtonHint&Qt::WindowCloseButtonHint);
 
     //connect(ThreadID2,SIGNAL(started()),this,SLOT(running));
 
@@ -73,7 +74,7 @@ Widget::Widget(QStackedWidget *parent)
     //connect(ThreadID1,SIGNAL(started()),this,SLOT(execute()));
 
 
-    //setFixedSize(612, 508);
+    setFixedSize(612, 508);
     CreateFirstPage();
     CreateSecondPage();
     CreateThirdPage();
@@ -108,7 +109,8 @@ void Widget::CreateFirstPage()
     //pixmapCover->scaled(400,400,Qt::KeepAspectRatio);
     paletteCover->setBrush(QPalette::Background,*pixmapCover);
     firstWidget->setPalette(*paletteCover);
-    //paintCover->drawPicture(QPointF(0,0),QPicture(":/img/cover."));
+
+
     //QLabel *labelCover = new QLabel;
     //QImage *imgCover = new QImage(":/img/cover.jpg");
     //labelCover->setPixmap(QPixmap(":/img/cover.jpg"));
@@ -154,12 +156,17 @@ void Widget::CreateFirstPage()
     //firstLayout->addSpacing(10);
     firstLayout->addStretch();
     //firstLayout->addWidget(labelHint,0,Qt::Alignment(1));
-    firstLayout->addWidget(buttonRoute);
-    firstLayout->addWidget(buttonState);
-    firstLayout->addWidget(buttonPlanChange);
-    firstLayout->addWidget(buttonClose);
+    firstLayout->addWidget(buttonRoute,Qt::AlignCenter);
+    firstLayout->addWidget(buttonState,Qt::AlignCenter);
+    firstLayout->addWidget(buttonPlanChange,Qt::AlignCenter);
+    firstLayout->addWidget(buttonClose,Qt::AlignCenter);
     //firstLayout->addSpacing(2);
     firstLayout->setAlignment(Qt::AlignCenter);
+
+    //buttonRoute->adjustSize();
+    //buttonState->adjustSize();
+    //buttonPlanChange->adjustSize();
+    //buttonClose->adjustSize();
     //setFixedHeight(sizeHint().height());
     //firstLayout->set
     //设置背景虚化、透明
@@ -849,7 +856,7 @@ void Widget::Confirm()
                                                  QMessageBox::Yes))
     {
         //timerRun->start(1000);
-        timerRun->start(500);
+        timerRun->start(1000);
         ask = 1;
         curTour = hTour;
         qDebug() << "(curr)tTour:" << tTour;
@@ -858,8 +865,9 @@ void Widget::Confirm()
             curTour = curTour->nextTour;
         }
         if(tTour != curTour)
-           curTour->nextTour = tTour;
-        //curTour = tTour;
+
+        curTour->nextTour = tTour;
+
 
         qDebug() << "curTour:" << curTour;
         qDebug() << "curTour->nextTour:" << curTour->nextTour;
@@ -1569,6 +1577,7 @@ void Widget::running()//假设10s为一小时，不间断地刷新乘客的信�
         {
             currentTime = clock();
             currentHour = (currentTime-zeroTime)/CLOCKS_PER_SEC;
+
             currentHour /= 3;//10s等于一小时
             float tempTime = p->startTime;
             float cur = p->line[1].firstExpressTime;
@@ -1675,4 +1684,5 @@ void Widget::running()//假设10s为一小时，不间断地刷新乘客的信�
     //qDebug() << "int:" << (int)tTour->currentState.percent;
     progressTour->setValue((int)(tTour->currentState.percent*100));
     //mutex.unlock();
+
 }

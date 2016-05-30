@@ -276,6 +276,8 @@ private:
 
 
 
+
+
     //QTextEdit *lineTextContent[N];
 
 };

@@ -116,35 +116,14 @@ QPointF mapWidget::setPointPos()
         pointPos = getCityCorner(CityToNum(tTour->startin));
         break;
     case 1:
-        double x,y;
+
         pointPos = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin))\
                     -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)))*(qreal)tTour->currentState.percent\
                 +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin));
-        /*if(getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).x()\
-                -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x())
-            x = ((getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).x())
-                    -(getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x()))*(qreal)tTour->currentState.percent
-                +(getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x());
-        else
-            x = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).x()
-                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x())*(1-(qreal)tTour->currentState.percent)
-                +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).x();
 
-        if(getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).y()\
-                -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y())
-            y = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).y()
-                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y())*(qreal)tTour->currentState.percent
-                +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y();
-        else
-            y = (getCityCorner(CityToNum(tTour->currentState.currentRoute.destin)).y()
-                    -getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y())*(1-(qreal)tTour->currentState.percent)
-                +getCityCorner(CityToNum(tTour->currentState.currentRoute.startin)).y();*/
-
-        //pointPos.setX(x);
-        //pointPos.setY(y);
         //qDebug() << "percent:" << tTour->currentState.percent;
-        //qDebug() << "destID:" << tTour->currentState.currentRoute.destID;
-        //qDebug() << "startID:" << tTour->currentState.currentRoute.startID;
+        //qDebug() << "destID:" << tTour->currentState.currentRoute.destin;
+        //qDebug() << "startID:" << tTour->currentState.currentRoute.startin;
         //qDebug() << "destX, destY:" << getCityCorner(tTour->currentState.currentRoute.destID);
                     //getCityCorner(tTour->currentState.currentRoute.destID).y;
         //qDebug() << "startX, startY:" << getCityCorner(tTour->currentState.currentRoute.startID);//.x <<\
